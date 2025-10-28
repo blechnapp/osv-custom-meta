@@ -1,8 +1,5 @@
-{# OSVCustomMeta active #}
-{# Erbt die Originalstruktur und überschreibt nur die relevanten Blöcke #}
 {% extends getPartial('page-metadata') %}
 
-{# --- META TITLE --- #}
 {% block title %}
   {{
     (itemData.variation.model
@@ -15,7 +12,6 @@
   }}
 {% endblock %}
 
-{# --- META DESCRIPTION --- #}
 {% block description %}
   {{
     (itemData.variation.externalId
@@ -24,7 +20,7 @@
       | default(itemData.texts.description | striptags)
     )
     | striptags
-    | u.truncate(160, '…', true)  {# ~160 Zeichen, Wortgrenzen #}
+    | u.truncate(160, '…', true)
     | trim
   }}
 {% endblock %}
