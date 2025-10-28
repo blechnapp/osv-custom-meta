@@ -1,32 +1,30 @@
-{# OSVCustomMeta – setzt Title/Description aus Variante
-   Title  = itemData.variation.model
-   Desc   = itemData.variation.externalId
-   Fallbacks: Varianten-/Artikelname und Kurztext
-#}
+{# OSVCustomMeta active #}
+{# Erbt die Originalstruktur und überschreibt nur die relevanten Blöcke #}
 {% extends getPartial('page-metadata') %}
 
+{# --- META TITLE --- #}
 {% block title %}
-    {% if itemData is not defined %}
-        {{ parent() }}
-    {% else %}
-        {{ itemData.variation.model
-           | default(itemData.variation.name
-           | default(itemData.texts.name1))
-           | trim }}
-    {% endif %}
+  {{
+    (itemData.variation.model
+      | default(itemData.texts.metaTitle)
+      | default(itemData.variation.name)
+      | default(itemData.texts.name1)
+    )
+    | striptags
+    | trim
+  }}
 {% endblock %}
 
+{# --- META DESCRIPTION --- #}
 {% block description %}
-    {% if itemData is not defined %}
-        {{ parent() }}
-    {% else %}
-        {{ itemData.variation.externalId
-           | default(
-               (itemData.texts.shortDescription
-                 | default(itemData.texts.description)
-                 | striptags
-                 | u.truncate(160, '…', false))
-           )
-           | trim }}
-    {% endif %}
+  {{
+    (itemData.variation.externalId
+      | default(itemData.texts.metaDescription)
+      | default(itemData.texts.shortDescription)
+      | default(itemData.texts.description | striptags)
+    )
+    | striptags
+    | u.truncate(160, '…', true)  {# ~160 Zeichen, Wortgrenzen #}
+    | trim
+  }}
 {% endblock %}
