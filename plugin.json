@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "name": "OSVCustomMeta",
+  "description": "Meta Title & Description Fix für Varianten in PlentyShop LTS 5.0.78",
+  "author": "blechnapp",
+  "license": "MIT",
+  "type": "template",
+  "namespace": "OSVCustomMeta",
+  "serviceProvider": "OSVCustomMeta\\Providers\\OSVCustomMetaServiceProvider",
+  "require": ["Ceres", "IO"]
+}
