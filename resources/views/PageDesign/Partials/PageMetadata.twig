@@ -1,0 +1,32 @@
+{# OSVCustomMeta – setzt Title/Description aus Variante
+   Title  = itemData.variation.model
+   Desc   = itemData.variation.externalId
+   Fallbacks: Varianten-/Artikelname und Kurztext
+#}
+{% extends getPartial('page-metadata') %}
+
+{% block title %}
+    {% if itemData is not defined %}
+        {{ parent() }}
+    {% else %}
+        {{ itemData.variation.model
+           | default(itemData.variation.name
+           | default(itemData.texts.name1))
+           | trim }}
+    {% endif %}
+{% endblock %}
+
+{% block description %}
+    {% if itemData is not defined %}
+        {{ parent() }}
+    {% else %}
+        {{ itemData.variation.externalId
+           | default(
+               (itemData.texts.shortDescription
+                 | default(itemData.texts.description)
+                 | striptags
+                 | u.truncate(160, '…', false))
+           )
+           | trim }}
+    {% endif %}
+{% endblock %}
