@@ -1,11 +1,8 @@
 {
   "name": "OSVCustomMeta",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "template",
   "namespace": "OSVCustomMeta",
   "license": "MIT",
-  "require": {
-    "plentyshop/plentyshop-lts": "*"
-  },
   "description": "Meta Title aus variation.model und Meta Description aus variation.externalId mit Fallbacks."
 }
