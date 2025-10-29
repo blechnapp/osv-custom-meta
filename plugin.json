@@ -1,13 +1,13 @@
 {
   "name": "OSVCustomMeta",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "Seiffener Volkskunst",
   "authorUrl": "https://www.original-seiffener-volkskunst.de",
   "namespace": "OSVCustomMeta",
   "type": "template",
   "license": "MIT",
   "require": {
-    "plenty-shop/plentyshop-lts": ">=5.0.0"
+    "plentyshop/plentyshop-lts": ">=5.0.0"
   },
   "description": "Meta Title aus variation.model und Meta Description aus variation.externalId mit Fallbacks."
 }
