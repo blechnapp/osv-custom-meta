@@ -1,15 +1,12 @@
 {
   "name": "OSVCustomMeta",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "type": "template",
   "namespace": "OSVCustomMeta",
   "license": "MIT",
-  "description": "Überschreibt PageMetaData.twig, um SEO Title & Description aus Varianten-Eigenschaften zu lesen.",
   "author": "Seiffener Volkskunst",
+  "description": "Überschreibt nur den Head der Produktseite, um SEO Title & Description aus Variantendaten zu setzen.",
   "pluginSetEntries": [
-    {
-      "key": "template",
-      "value": "resources/views"
-    }
+    { "key": "template", "value": "resources/views" }
   ]
 }
