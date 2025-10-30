@@ -1,36 +1,4 @@
-<meta name="x-osvcustommeta" content="active"/>
-
-{% embed getPartial('page-metadata') %}
-  {% block title %}
-    {% set metaTitle = null %}
-    {% for p in itemData.variation.properties|default([]) %}
-      {% if p.propertyId == 284 or (p.property and p.property.id == 284) %}
-        {% set metaTitle = p.texts.value
-          |default(p.values[0].value|default(p.value|default(null))) %}
-      {% endif %}
-    {% endfor %}
-    {{ (metaTitle
-        |default(itemData.variation.model)
-        |default(itemData.texts.metaTitle)
-        |default(itemData.variation.name)
-        |default(itemData.texts.name1)) |striptags |trim }}
-  {% endblock %}
-
-  {% block description %}
-    {% set metaDesc = null %}
-    {% for p in itemData.variation.properties|default([]) %}
-      {% if p.propertyId == 285 or (p.property and p.property.id == 285) %}
-        {% set metaDesc = p.texts.value
-          |default(p.values[0].value|default(p.value|default(null))) %}
-      {% endif %}
-    {% endfor %}
-    {% set seoDesc = (metaDesc
-        |default(itemData.variation.externalId)
-        |default(itemData.texts.metaDescription)
-        |default(itemData.texts.shortDescription)
-        |default(itemData.texts.description|striptags)) |striptags |trim %}
-    {% if seoDesc is not empty %}
-      <meta name="description" content="{{ seoDesc | u.truncate(160, '…', true) }}">
-    {% endif %}
-  {% endblock %}
-{% endembed %}
+{# OSV Test: Vollständiger Ersatz des Meta-Partials #}
+<meta name="x-osvcustommeta" content="ACTIVE-HARD-OVERRIDE" />
+<title>OSV TEST TITLE</title>
+<meta name="description" content="OSV TEST DESCRIPTION" />
