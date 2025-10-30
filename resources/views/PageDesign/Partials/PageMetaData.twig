@@ -1,23 +1,15 @@
-{# PageMetaData Partial: rendert Head-Meta-Infos via Blocks.
-   Wird von SingleItemWrapper.twig embed() und überschreibt die Blöcke title/description etc. #}
+{# PageMetaData Partial: rendert Head-Meta-Infos via Blocks. #}
 
-{# title block (Default-Fallbacks dürfen hier definiert werden) #}
-<title>{% block title %}{{ "No title defined" }}{% endblock %}</title>
+<title>{% block title %}{{ itemData.texts.title | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)) }}{% endblock %}</title>
 
-{# meta description block #}
-<meta name="description" content="{% block description %}{{ "" }}{% endblock %}" />
+<meta name="description" content="{% block description %}{{ itemData.texts.metaDescription | default('') }}{% endblock %}" />
+<meta name="keywords" content="{% block keywords %}{{ itemData.texts.keywords | default('') }}{% endblock %}" />
 
-{# meta keywords block (optional) #}
-<meta name="keywords" content="{% block keywords %}{{ "" }}{% endblock %}" />
-
-{# Open Graph / Twitter / image (optional) #}
-<meta property="og:title" content="{% block title %}{{ "" }}{% endblock %}" />
-<meta property="og:description" content="{% block description %}{{ "" }}{% endblock %}" />
-<meta property="og:image" content="{% block image %}{{ "" }}{% endblock %}" />
+<meta property="og:title" content="{% block title %}{{ itemData.texts.title | default('') }}{% endblock %}" />
+<meta property="og:description" content="{% block description %}{{ itemData.texts.metaDescription | default('') }}{% endblock %}" />
+<meta property="og:image" content="{% block image %}{{ itemData.images.all[0].url | default('') }}{% endblock %}" />
 <meta name="twitter:card" content="summary_large_image" />
 
-{# robots block #}
-<meta name="robots" content="{% block robots %}{{ "index,follow" }}{% endblock %}" />
+<meta name="robots" content="{% block robots %}{{ robots | default('index,follow') }}{% endblock %}" />
 
-{# schemaOrg block (raw JSON-LD expected) #}
 {% block schemaOrg %}{% endblock %}
