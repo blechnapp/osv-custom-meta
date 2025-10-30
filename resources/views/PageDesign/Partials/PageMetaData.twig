@@ -1,24 +1,22 @@
-<meta name="x-osvcustommeta" content="active" />
-{% extends getPartial('page-metadata') %}
+{# --- Properties der aktiven Variation lesen --- #}
+{% set seoTitleProp = itemData.variation.properties | filter(p => p.property.id == 284) | first %}
+{% set seoDescProp  = itemData.variation.properties | filter(p => p.property.id == 285) | first %}
 
-{% block title %}
-  {{
-    (itemData.variation.model
-      | default(itemData.texts.metaTitle)
-      | default(itemData.variation.name)
-      | default(itemData.texts.name1)
-    )
-    | striptags | trim
-  }}
-{% endblock %}
+{% set seoTitle = seoTitleProp and seoTitleProp.value is not empty ? seoTitleProp.value : null %}
+{% set seoDesc  = seoDescProp  and seoDescProp.value  is not empty ? seoDescProp.value  : null %}
 
-{% block description %}
-  {{
-    (itemData.variation.externalId
-      | default(itemData.texts.metaDescription)
-      | default(itemData.texts.shortDescription)
-      | default(itemData.texts.description | striptags)
-    )
-    | striptags | u.truncate(160, '…', true) | trim
-  }}
-{% endblock %}
+{# --- Title --- #}
+<title>
+  {{ (seoTitle
+      | default(itemData.variation.model)
+      | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)))
+      | striptags | trim | slice(0, 65) }}
+</title>
+
+{# --- Description --- #}
+{% if (seoDesc | default(itemData.variation.externalId) | default(itemData.texts.metaDescription)) is not empty %}
+  <meta name="description" content="{{ (seoDesc
+      | default(itemData.variation.externalId)
+      | default(itemData.texts.metaDescription))
+      | striptags | trim | slice(0, 160) }}">
+{% endif %}
