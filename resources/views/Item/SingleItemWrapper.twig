@@ -1,29 +1,52 @@
-{# OSVCustomMeta: überschreibt nur den Head der Produktseite #}
+{# OSVCustomMeta: überschreibt nur den Head der Produktseite.
+   Lege diese Datei in dein Plugin unter resources/views/Item/ ab.
+   Sie liest zuerst Varianten-Eigenschaften (IDs 284/285), fällt dann
+   auf variation.model / variation.externalId zurück und zuletzt auf die
+   Standard-Title/Description. #}
+
 {% embed getTemplate('Ceres::Item.SingleItemWrapper') %}
 
 {% block PartialHead %}
+    {# Debug-Marker: optional, entfernen wenn alles funktioniert #}
     <meta name="x-osvcustommeta" content="active"/>
 
+    {# itemData aus der originalen Template-Context übernehmen #}
     {% set itemData = item.documents[0].data %}
 
-    {# --- 1) Varianteneigenschaften per ID (284/285) versuchen --- #}
+    {# --- 1) Versuch: Varianteneigenschaften per ID (284 = SEO Title, 285 = SEO Description) --- #}
     {% set seoTitleProp = '' %}
     {% set seoDescProp  = '' %}
 
     {% if itemData.variation is defined and itemData.variation.properties is defined %}
-        {% set seoTitleProp = itemData.variation.properties | filter(p => (p.property is defined and p.property.id == 284) or (p.propertyId is defined and p.propertyId == 284) or (p.id is defined and p.id == 284)) | first %}
-        {% set seoDescProp  = itemData.variation.properties | filter(p => (p.property is defined and p.property.id == 285) or (p.propertyId is defined and p.propertyId == 285) or (p.id is defined and p.id == 285)) | first %}
+        {% set seoTitleProp = itemData.variation.properties
+            | filter(p => (p.property is defined and p.property.id == 284)
+                         or (p.propertyId is defined and p.propertyId == 284)
+                         or (p.id is defined and p.id == 284))
+            | first %}
+        {% set seoDescProp  = itemData.variation.properties
+            | filter(p => (p.property is defined and p.property.id == 285)
+                         or (p.propertyId is defined and p.propertyId == 285)
+                         or (p.id is defined and p.id == 285))
+            | first %}
     {% endif %}
 
-    {# --- 2) Fallback: falls Properties nicht vorhanden, prüfe variation unter item.documents[0].data.variation --- #}
+    {# 2) Fallback: manche Installationen haben variation unter item.documents[0].data.variation #}
     {% if not seoTitleProp and item.documents[0].data.variation is defined and item.documents[0].data.variation.properties is defined %}
-        {% set seoTitleProp = item.documents[0].data.variation.properties | filter(p => (p.property is defined and p.property.id == 284) or (p.propertyId is defined and p.propertyId == 284) or (p.id is defined and p.id == 284)) | first %}
+        {% set seoTitleProp = item.documents[0].data.variation.properties
+            | filter(p => (p.property is defined and p.property.id == 284)
+                         or (p.propertyId is defined and p.propertyId == 284)
+                         or (p.id is defined and p.id == 284))
+            | first %}
     {% endif %}
     {% if not seoDescProp and item.documents[0].data.variation is defined and item.documents[0].data.variation.properties is defined %}
-        {% set seoDescProp = item.documents[0].data.variation.properties | filter(p => (p.property is defined and p.property.id == 285) or (p.propertyId is defined and p.propertyId == 285) or (p.id is defined and p.id == 285)) | first %}
+        {% set seoDescProp = item.documents[0].data.variation.properties
+            | filter(p => (p.property is defined and p.property.id == 285)
+                         or (p.propertyId is defined and p.propertyId == 285)
+                         or (p.id is defined and p.id == 285))
+            | first %}
     {% endif %}
 
-    {# --- 3) Extrahiere String-Werte aus den gefundenen property-Objekten --- #}
+    {# --- 3) Extrahiere den Stringwert aus dem gefundenen property-Objekt (verschiedene Strukturen) --- #}
     {% set seoTitle = '' %}
     {% set seoDesc  = '' %}
 
@@ -34,6 +57,8 @@
             {% set seoTitle = seoTitleProp.values[0] %}
         {% elseif seoTitleProp.property is defined and seoTitleProp.property.value is defined %}
             {% set seoTitle = seoTitleProp.property.value %}
+        {% elseif seoTitleProp.translation is defined and seoTitleProp.translation.value is defined %}
+            {% set seoTitle = seoTitleProp.translation.value %}
         {% endif %}
     {% endif %}
 
@@ -44,18 +69,20 @@
             {% set seoDesc = seoDescProp.values[0] %}
         {% elseif seoDescProp.property is defined and seoDescProp.property.value is defined %}
             {% set seoDesc = seoDescProp.property.value %}
+        {% elseif seoDescProp.translation is defined and seoDescProp.translation.value is defined %}
+            {% set seoDesc = seoDescProp.translation.value %}
         {% endif %}
     {% endif %}
 
-    {# --- 4) Falls weiterhin leer: nutze variation.model / variation.externalId (deine alte Lösung) --- #}
-    {% if seoTitle | length == 0 and itemData.variation is defined and itemData.variation.model is defined %}
+    {# --- 4) Falls weiterhin leer: alte Felder nutzen (model / externalId) --- #}
+    {% if (seoTitle | length) == 0 and itemData.variation is defined and itemData.variation.model is defined %}
         {% set seoTitle = itemData.variation.model %}
     {% endif %}
-    {% if seoDesc | length == 0 and itemData.variation is defined and itemData.variation.externalId is defined %}
+    {% if (seoDesc | length) == 0 and itemData.variation is defined and itemData.variation.externalId is defined %}
         {% set seoDesc = itemData.variation.externalId %}
     {% endif %}
 
-    {# --- 5) Letzte Fallbacks: itemData.texts.* oder ItemName --- #}
+    {# --- 5) Letzter Fallback: item texts / ItemName --- #}
     {% set seoTitle = seoTitle | default('') | trim %}
     {% set seoDesc  = seoDesc  | default('') | trim %}
 
@@ -63,4 +90,19 @@
         {% set metaTitleToUse = seoTitle %}
     {% else %}
         {% set metaTitleToUse = itemData.texts.title | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)) %}
+    {% endif %}
 
+    {% if seoDesc | length > 0 %}
+        {% set metaDescriptionToUse = seoDesc %}
+    {% else %}
+        {% set metaDescriptionToUse = itemData.texts.metaDescription %}
+    {% endif %}
+
+    {# --- 6) PageMetaData Partial einbinden und nur Title/Description überschreiben --- #}
+    {% embed getPartial('page-metadata') %}
+        {% block title %}{{ metaTitleToUse }}{% endblock %}
+        {% block description %}{{ metaDescriptionToUse }}{% endblock %}
+    {% endembed %}
+{% endblock %}
+
+{% endembed %}
