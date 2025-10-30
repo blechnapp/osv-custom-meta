@@ -1,0 +1,31 @@
+{# Marker, um zu prüfen, ob das Plugin aktiv ist #}
+<meta name="x-osvcustommeta" content="active" />
+
+{% extends getPartial('page-metadata') %}
+
+{# --- META TITLE --- #}
+{% block title %}
+  {{
+    (itemData.variation.model
+      | default(itemData.texts.metaTitle)
+      | default(itemData.variation.name)
+      | default(itemData.texts.name1)
+    )
+    | striptags
+    | trim
+  }}
+{% endblock %}
+
+{# --- META DESCRIPTION --- #}
+{% block description %}
+  {{
+    (itemData.variation.externalId
+      | default(itemData.texts.metaDescription)
+      | default(itemData.texts.shortDescription)
+      | default(itemData.texts.description | striptags)
+    )
+    | striptags
+    | u.truncate(160, '…', true)
+    | trim
+  }}
+{% endblock %}
