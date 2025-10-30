@@ -1,11 +1,15 @@
 {
   "name": "OSVCustomMeta",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "type": "template",
   "namespace": "OSVCustomMeta",
   "license": "MIT",
-  "description": "Meta Title aus variation.model und Meta Description aus variation.externalId mit Fallbacks.",
-  "require": {
-    "plentyshop/plentyshop-lts": ">=5.0.0"
-  }
+  "description": "Überschreibt PageMetaData.twig, um SEO Title & Description aus Varianten-Eigenschaften zu lesen.",
+  "author": "Seiffener Volkskunst",
+  "pluginSetEntries": [
+    {
+      "key": "template",
+      "value": "resources/views"
+    }
+  ]
 }
