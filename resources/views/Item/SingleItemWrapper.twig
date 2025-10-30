@@ -1,0 +1,35 @@
+{# OSVCustomMeta: überschreibt nur den Head der Produktseite #}
+{% embed getTemplate('Ceres::Item.SingleItemWrapper') %}
+
+  {% block PartialHead %}
+    {# Marker für Debug: lässt sich im Quelltext leicht finden #}
+    <meta name="x-osvcustommeta" content="active"/>
+
+    {# --- SEO-Properties nach ID lesen --- #}
+    {% set seoTitleProp = itemData.variation.properties | filter(p => p.property.id == 284) | first %}
+    {% set seoDescProp  = itemData.variation.properties | filter(p => p.property.id == 285) | first %}
+
+    {% set seoTitle = seoTitleProp and seoTitleProp.value is not empty ? seoTitleProp.value : null %}
+    {% set seoDesc  = seoDescProp  and seoDescProp.value  is not empty ? seoDescProp.value  : null %}
+
+    {# --- Meta-Partial einbinden und NUR Title/Description überschreiben --- #}
+    {% embed getPartial('page-metadata') %}
+
+      {% block title %}
+        {{ (seoTitle
+            | default(itemData.variation.model)
+            | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)))
+            | striptags | trim | slice(0, 65) }}
+      {% endblock %}
+
+      {% block description %}
+        {{ (seoDesc
+            | default(itemData.variation.externalId)
+            | default(itemData.texts.metaDescription))
+            | striptags | trim | slice(0, 160) }}
+      {% endblock %}
+
+    {% endembed %}
+  {% endblock %}
+
+{% endembed %}
