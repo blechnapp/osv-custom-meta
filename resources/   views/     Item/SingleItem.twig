@@ -1,0 +1,41 @@
+{# OSVCustomMeta: überschreibt nur den Head der Produktseite #}
+{% embed getTemplate('Ceres::Item.SingleItem') %}
+
+  {% block PartialHead %}
+    <meta name="x-osvcustommeta" content="active"/>
+
+    {# Nutzt die Standard-Metadaten-Partial, überschreibt aber Title & Description #}
+    {% embed getPartial('page-metadata') %}
+
+      {# --- TITLE --- #}
+      {% block title %}
+        {{
+          (
+            itemData.variation.model
+            | default(itemData.texts.metaTitle)
+            | default(itemData.variation.name)
+            | default(itemData.texts.name1)
+          )
+          | striptags
+          | trim
+        }}
+      {% endblock %}
+
+      {# --- DESCRIPTION --- #}
+      {% block description %}
+        {% set seoDesc = (
+          itemData.variation.externalId
+          | default(itemData.texts.metaDescription)
+          | default(itemData.texts.shortDescription)
+          | default(itemData.texts.description | striptags)
+        ) | striptags | trim %}
+
+        {% if seoDesc is not empty %}
+          <meta name="description" content="{{ seoDesc | u.truncate(160, '…', true) }}">
+        {% endif %}
+      {% endblock %}
+
+    {% endembed %}
+  {% endblock %}
+
+{% endembed %}
