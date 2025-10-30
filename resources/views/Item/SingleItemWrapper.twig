@@ -1,35 +1,52 @@
 {# OSVCustomMeta: überschreibt nur den Head der Produktseite #}
 {% embed getTemplate('Ceres::Item.SingleItemWrapper') %}
 
-  {% block PartialHead %}
+{% block PartialHead %}
     {# Marker für Debug: lässt sich im Quelltext leicht finden #}
     <meta name="x-osvcustommeta" content="active"/>
 
-    {# --- SEO-Properties nach ID lesen --- #}
+    {# --- SEO-Properties nach ID lesen (284 = SEO Title, 285 = SEO Description) --- #}
+    {# Versuche, die Property in variation.properties zu finden #}
     {% set seoTitleProp = itemData.variation.properties | filter(p => p.property.id == 284) | first %}
     {% set seoDescProp  = itemData.variation.properties | filter(p => p.property.id == 285) | first %}
 
-    {% set seoTitle = seoTitleProp and seoTitleProp.value is not empty ? seoTitleProp.value : null %}
-    {% set seoDesc  = seoDescProp  and seoDescProp.value  is not empty ? seoDescProp.value  : null %}
+    {# Falls Struktur anders: fallback auf item.documents[0].data.variation.properties prüfen #}
+    {% if not seoTitleProp and item.documents[0].data.variation is defined and item.documents[0].data.variation.properties is defined %}
+        {% set seoTitleProp = item.documents[0].data.variation.properties | filter(p => p.property.id == 284) | first %}
+    {% endif %}
+    {% if not seoDescProp and item.documents[0].data.variation is defined and item.documents[0].data.variation.properties is defined %}
+        {% set seoDescProp = item.documents[0].data.variation.properties | filter(p => p.property.id == 285) | first %}
+    {% endif %}
+
+    {# Extrahiere den tatsächlichen String-Wert (verschiedene Strukturen möglich) #}
+    {% set seoTitle = seoTitleProp.value is defined ? seoTitleProp.value : (seoTitleProp.values is defined and seoTitleProp.values[0] is defined ? seoTitleProp.values[0] : '') %}
+    {% set seoDesc  = seoDescProp.value is defined ? seoDescProp.value : (seoDescProp.values is defined and seoDescProp.values[0] is defined ? seoDescProp.values[0] : '') %}
+
+    {% set seoTitle = seoTitle | default('') | trim %}
+    {% set seoDesc  = seoDesc  | default('') | trim %}
+
+    {# Fallbacks: falls leer, verwende bestehende Texte #}
+    {% if seoTitle | length > 0 %}
+        {% set metaTitleToUse = seoTitle %}
+    {% else %}
+        {% set metaTitleToUse = itemData.texts.title | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)) %}
+    {% endif %}
+
+    {% if seoDesc | length > 0 %}
+        {% set metaDescriptionToUse = seoDesc %}
+    {% else %}
+        {% set metaDescriptionToUse = itemData.texts.metaDescription %}
+    {% endif %}
 
     {# --- Meta-Partial einbinden und NUR Title/Description überschreiben --- #}
     {% embed getPartial('page-metadata') %}
-
-      {% block title %}
-        {{ (seoTitle
-            | default(itemData.variation.model)
-            | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)))
-            | striptags | trim | slice(0, 65) }}
-      {% endblock %}
-
-      {% block description %}
-        {{ (seoDesc
-            | default(itemData.variation.externalId)
-            | default(itemData.texts.metaDescription))
-            | striptags | trim | slice(0, 160) }}
-      {% endblock %}
-
+        {% block title %}
+            {{ metaTitleToUse }}
+        {% endblock %}
+        {% block description %}
+            {{ metaDescriptionToUse }}
+        {% endblock %}
     {% endembed %}
-  {% endblock %}
+{% endblock %}
 
 {% endembed %}
