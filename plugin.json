@@ -1,12 +1,15 @@
 {
-  "name": "OSVCustomMeta",
-  "version": "1.0.21",
-  "type": "template",
-  "namespace": "OSVCustomMeta",
-  "license": "MIT",
-  "author": "Seiffener Volkskunst",
-  "description": "Überschreibt nur den Head der Produktseite, um SEO Title & Description aus Variantendaten zu setzen.",
-  "pluginSetEntries": [
-    { "key": "template", "value": "resources/views" }
-  ]
+    "name": "OSVCustomMeta",
+    "version": "1.0.22",
+    "type": "template",
+    "namespace": "OSVCustomMeta",
+    "license": "MIT",
+    "author": "Seiffener Volkskunst",
+    "description": "Überschreibt nur den Head der Produktseite, um SEO Title & Description aus Variantendaten zu setzen.",
+    "pluginSetEntries": [
+        {
+            "key": "template",
+            "value": "resources/views"
+        }
+    ]
 }
