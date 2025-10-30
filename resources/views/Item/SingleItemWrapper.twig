@@ -2,51 +2,65 @@
 {% embed getTemplate('Ceres::Item.SingleItemWrapper') %}
 
 {% block PartialHead %}
-    {# Marker für Debug: lässt sich im Quelltext leicht finden #}
     <meta name="x-osvcustommeta" content="active"/>
 
-    {# --- SEO-Properties nach ID lesen (284 = SEO Title, 285 = SEO Description) --- #}
-    {# Versuche, die Property in variation.properties zu finden #}
-    {% set seoTitleProp = itemData.variation.properties | filter(p => p.property.id == 284) | first %}
-    {% set seoDescProp  = itemData.variation.properties | filter(p => p.property.id == 285) | first %}
+    {% set itemData = item.documents[0].data %}
 
-    {# Falls Struktur anders: fallback auf item.documents[0].data.variation.properties prüfen #}
+    {# --- 1) Varianteneigenschaften per ID (284/285) versuchen --- #}
+    {% set seoTitleProp = '' %}
+    {% set seoDescProp  = '' %}
+
+    {% if itemData.variation is defined and itemData.variation.properties is defined %}
+        {% set seoTitleProp = itemData.variation.properties | filter(p => (p.property is defined and p.property.id == 284) or (p.propertyId is defined and p.propertyId == 284) or (p.id is defined and p.id == 284)) | first %}
+        {% set seoDescProp  = itemData.variation.properties | filter(p => (p.property is defined and p.property.id == 285) or (p.propertyId is defined and p.propertyId == 285) or (p.id is defined and p.id == 285)) | first %}
+    {% endif %}
+
+    {# --- 2) Fallback: falls Properties nicht vorhanden, prüfe variation unter item.documents[0].data.variation --- #}
     {% if not seoTitleProp and item.documents[0].data.variation is defined and item.documents[0].data.variation.properties is defined %}
-        {% set seoTitleProp = item.documents[0].data.variation.properties | filter(p => p.property.id == 284) | first %}
+        {% set seoTitleProp = item.documents[0].data.variation.properties | filter(p => (p.property is defined and p.property.id == 284) or (p.propertyId is defined and p.propertyId == 284) or (p.id is defined and p.id == 284)) | first %}
     {% endif %}
     {% if not seoDescProp and item.documents[0].data.variation is defined and item.documents[0].data.variation.properties is defined %}
-        {% set seoDescProp = item.documents[0].data.variation.properties | filter(p => p.property.id == 285) | first %}
+        {% set seoDescProp = item.documents[0].data.variation.properties | filter(p => (p.property is defined and p.property.id == 285) or (p.propertyId is defined and p.propertyId == 285) or (p.id is defined and p.id == 285)) | first %}
     {% endif %}
 
-    {# Extrahiere den tatsächlichen String-Wert (verschiedene Strukturen möglich) #}
-    {% set seoTitle = seoTitleProp.value is defined ? seoTitleProp.value : (seoTitleProp.values is defined and seoTitleProp.values[0] is defined ? seoTitleProp.values[0] : '') %}
-    {% set seoDesc  = seoDescProp.value is defined ? seoDescProp.value : (seoDescProp.values is defined and seoDescProp.values[0] is defined ? seoDescProp.values[0] : '') %}
+    {# --- 3) Extrahiere String-Werte aus den gefundenen property-Objekten --- #}
+    {% set seoTitle = '' %}
+    {% set seoDesc  = '' %}
 
+    {% if seoTitleProp is defined and seoTitleProp is not empty %}
+        {% if seoTitleProp.value is defined %}
+            {% set seoTitle = seoTitleProp.value %}
+        {% elseif seoTitleProp.values is defined and seoTitleProp.values[0] is defined %}
+            {% set seoTitle = seoTitleProp.values[0] %}
+        {% elseif seoTitleProp.property is defined and seoTitleProp.property.value is defined %}
+            {% set seoTitle = seoTitleProp.property.value %}
+        {% endif %}
+    {% endif %}
+
+    {% if seoDescProp is defined and seoDescProp is not empty %}
+        {% if seoDescProp.value is defined %}
+            {% set seoDesc = seoDescProp.value %}
+        {% elseif seoDescProp.values is defined and seoDescProp.values[0] is defined %}
+            {% set seoDesc = seoDescProp.values[0] %}
+        {% elseif seoDescProp.property is defined and seoDescProp.property.value is defined %}
+            {% set seoDesc = seoDescProp.property.value %}
+        {% endif %}
+    {% endif %}
+
+    {# --- 4) Falls weiterhin leer: nutze variation.model / variation.externalId (deine alte Lösung) --- #}
+    {% if seoTitle | length == 0 and itemData.variation is defined and itemData.variation.model is defined %}
+        {% set seoTitle = itemData.variation.model %}
+    {% endif %}
+    {% if seoDesc | length == 0 and itemData.variation is defined and itemData.variation.externalId is defined %}
+        {% set seoDesc = itemData.variation.externalId %}
+    {% endif %}
+
+    {# --- 5) Letzte Fallbacks: itemData.texts.* oder ItemName --- #}
     {% set seoTitle = seoTitle | default('') | trim %}
     {% set seoDesc  = seoDesc  | default('') | trim %}
 
-    {# Fallbacks: falls leer, verwende bestehende Texte #}
     {% if seoTitle | length > 0 %}
         {% set metaTitleToUse = seoTitle %}
     {% else %}
         {% set metaTitleToUse = itemData.texts.title | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)) %}
-    {% endif %}
 
-    {% if seoDesc | length > 0 %}
-        {% set metaDescriptionToUse = seoDesc %}
-    {% else %}
-        {% set metaDescriptionToUse = itemData.texts.metaDescription %}
-    {% endif %}
-
-    {# --- Meta-Partial einbinden und NUR Title/Description überschreiben --- #}
-    {% embed getPartial('page-metadata') %}
-        {% block title %}
-            {{ metaTitleToUse }}
-        {% endblock %}
-        {% block description %}
-            {{ metaDescriptionToUse }}
-        {% endblock %}
-    {% endembed %}
-{% endblock %}
-
-{% endembed %}
