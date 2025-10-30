@@ -1,4 +1,6 @@
-{# PageMetaData Partial: rendert Head-Meta-Infos via Blocks. #}
+{# PageMetaData Partial: block-basierte Meta-Ausgabe.
+   Lege diese Datei in dein Plugin unter resources/views/PageDesign/Partials/ ab.
+   Sie liefert sinnvolle Defaults und lässt embed()-Aufrufer per block überschreiben. #}
 
 <title>{% block title %}{{ itemData.texts.title | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)) }}{% endblock %}</title>
 
@@ -12,4 +14,5 @@
 
 <meta name="robots" content="{% block robots %}{{ robots | default('index,follow') }}{% endblock %}" />
 
+{# schemaOrg block: wenn vorhanden wird JSON-LD aus dem aufrufenden Template eingefügt #}
 {% block schemaOrg %}{% endblock %}
