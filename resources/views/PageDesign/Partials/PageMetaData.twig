@@ -1,4 +1,23 @@
-{# OSV Test: Vollständiger Ersatz des Meta-Partials #}
-<meta name="x-osvcustommeta" content="ACTIVE-HARD-OVERRIDE" />
-<title>OSV TEST TITLE</title>
-<meta name="description" content="OSV TEST DESCRIPTION" />
+{# PageMetaData Partial: rendert Head-Meta-Infos via Blocks.
+   Wird von SingleItemWrapper.twig embed() und überschreibt die Blöcke title/description etc. #}
+
+{# title block (Default-Fallbacks dürfen hier definiert werden) #}
+<title>{% block title %}{{ "No title defined" }}{% endblock %}</title>
+
+{# meta description block #}
+<meta name="description" content="{% block description %}{{ "" }}{% endblock %}" />
+
+{# meta keywords block (optional) #}
+<meta name="keywords" content="{% block keywords %}{{ "" }}{% endblock %}" />
+
+{# Open Graph / Twitter / image (optional) #}
+<meta property="og:title" content="{% block title %}{{ "" }}{% endblock %}" />
+<meta property="og:description" content="{% block description %}{{ "" }}{% endblock %}" />
+<meta property="og:image" content="{% block image %}{{ "" }}{% endblock %}" />
+<meta name="twitter:card" content="summary_large_image" />
+
+{# robots block #}
+<meta name="robots" content="{% block robots %}{{ "index,follow" }}{% endblock %}" />
+
+{# schemaOrg block (raw JSON-LD expected) #}
+{% block schemaOrg %}{% endblock %}
