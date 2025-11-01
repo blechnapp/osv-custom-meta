@@ -1,10 +1,10 @@
 {
   "name": "OSVCustomMeta",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "template",
   "namespace": "OSVCustomMeta",
   "license": "MIT",
-  "description": "Eigene Views und Overrides für Produktseiten (SingleItemWrapper & Meta).",
+  "description": "Overrides für Produktseite/Meta.",
   "author": "Seiffener Volkskunst",
   "pluginSetEntries": [
     { "key": "template", "value": "resources/views" }
