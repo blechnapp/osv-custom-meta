@@ -1,13 +1,15 @@
 {
   "name": "OSVCustomMeta",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "type": "template",
   "namespace": "OSVCustomMeta",
   "license": "MIT",
-  "description": "Overrides für Produktseite/Meta.",
+  "description": "Setzt Meta Title und Description clientseitig über JS basierend auf Varianten-Eigenschaften.",
   "author": "Seiffener Volkskunst",
   "pluginSetEntries": [
-    { "key": "template", "value": "resources/views" }
-  ],
-  "serviceProvider": "OSVCustomMeta\\Providers\\OSVCustomMetaServiceProvider"
+    {
+      "key": "template",
+      "value": "resources/views"
+    }
+  ]
 }
