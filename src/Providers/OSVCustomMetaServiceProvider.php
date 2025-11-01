@@ -4,28 +4,23 @@ declare(strict_types=1);
 namespace OSVCustomMeta\Providers;
 
 use Plenty\Plugin\ServiceProvider;
-use Plenty\Plugin\Templates\TemplateContainer;
 
 final class OSVCustomMetaServiceProvider extends ServiceProvider
 {
-    public function register(): void
-    {
-        // nichts nötig
-    }
+    public function register(): void {}
 
-    // ✅ Der TemplateContainer wird hier automatisch von plenty injiziert
-    public function boot(TemplateContainer $container): void
+    public function boot(): void
     {
-        // Test: Meta-Partial überschreiben
+        // Container statisch holen – KEINE Injection, KEIN pluginApp()
+        $container = \Plenty\Plugin\Templates\TemplateContainer::get();
+
+        // Zum Test: Meta-Partial hart überschreiben
         $container->set(
             'Ceres::PageDesign.Partials.PageMetaData',
             'OSVCustomMeta::PageDesign.Partials.PageMetaData'
         );
 
-        // Alternative: Wenn du lieber den Wrapper überschreiben willst
-        // $container->set(
-        //     'Ceres::Item.SingleItemWrapper',
-        //     'OSVCustomMeta::Item.SingleItemWrapper'
-        // );
+        // Optional: SingleItemWrapper statt Partial
+        // $container->set('Ceres::Item.SingleItemWrapper','OSVCustomMeta::Item.SingleItemWrapper');
     }
 }
