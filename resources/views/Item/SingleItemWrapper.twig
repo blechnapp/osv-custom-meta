@@ -1,15 +1,15 @@
-{# OSVCustomMeta: Minimal-Test mit sichtbarem Marker #}
+{# OSVCustomMeta: SingleItemWrapper-Override #}
 {% embed getTemplate('Ceres::Item.SingleItemWrapper') %}
 
-{% block PartialHead %}
-    {# Sichtbarer Debug-Marker (wird später entfernt) #}
-    <div id="osv-debug-marker" style="position:fixed;top:0;left:0;background:yellow;z-index:99999;padding:5px;">
-        OSV Template Override AKTIV (Version 1.0.22)<br>
-        Timestamp: {{ "now"|date("Y-m-d H:i:s") }}
-    </div>
+  {% block PartialHead %}
+    <meta name="x-osvcustommeta" content="active-wrapper"/>
+    {# … hier deine Ausgabe/Logik … #}
 
-    {# Standard Head-Block erstmal unverändert weitergeben #}
-    {{ parent() }}
-{% endblock %}
+    {# Beispiel: Meta-Partial wiederverwenden und nur Blöcke überschreiben #}
+    {% embed getPartial('page-metadata') %}
+      {% block title %}{{ (itemData.variation.model | default(itemData.texts.name1)) | striptags | trim }}{% endblock %}
+      {% block description %}{{ (itemData.texts.metaDescription | default(itemData.texts.shortDescription | default(itemData.texts.description | striptags))) | striptags | trim }}{% endblock %}
+    {% endembed %}
+  {% endblock %}
 
 {% endembed %}
