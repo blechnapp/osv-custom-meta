@@ -5,32 +5,27 @@ namespace OSVCustomMeta\Providers;
 
 use Plenty\Plugin\ServiceProvider;
 use Plenty\Plugin\Templates\TemplateContainer;
-use Plenty\Plugin\Log\Loggable;
 
 final class OSVCustomMetaServiceProvider extends ServiceProvider
 {
-    use Loggable;
-
     public function register(): void
     {
         // nichts nötig
     }
 
+    // ✅ Der TemplateContainer wird hier automatisch von plenty injiziert
     public function boot(TemplateContainer $container): void
     {
-        // Sichtbarer Logeintrag zum Nachweis, dass der Provider läuft
-        $this->getLogger(__CLASS__)->info('OSVCustomMeta booted', []);
-
-        // Beispiel: SingleItemWrapper überschreiben
+        // Test: Meta-Partial überschreiben
         $container->set(
-            'Ceres::Item.SingleItemWrapper',
-            'OSVCustomMeta::Item.SingleItemWrapper'
+            'Ceres::PageDesign.Partials.PageMetaData',
+            'OSVCustomMeta::PageDesign.Partials.PageMetaData'
         );
 
-        // Optional (zum Hard-Test): Meta-Partial überschreiben
+        // Alternative: Wenn du lieber den Wrapper überschreiben willst
         // $container->set(
-        //     'Ceres::PageDesign.Partials.PageMetaData',
-        //     'OSVCustomMeta::PageDesign.Partials.PageMetaData'
+        //     'Ceres::Item.SingleItemWrapper',
+        //     'OSVCustomMeta::Item.SingleItemWrapper'
         // );
     }
 }
