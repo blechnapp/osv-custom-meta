@@ -1,0 +1,21 @@
+{% embed getPartial('scripts') %}{% endembed %}
+
+<script>
+(function(){
+  function setMeta(title, desc){
+    if(title){ document.title = title.trim(); }
+    if(desc){
+      var m = document.querySelector('meta[name="description"]');
+      if(!m){ m = document.createElement('meta'); m.setAttribute('name','description'); document.head.appendChild(m); }
+      m.setAttribute('content', desc.trim());
+    }
+  }
+  function run(){
+    var el = document.getElementById('osv-seo-data');
+    if(!el) return;
+    setMeta(el.getAttribute('data-seo-title'), el.getAttribute('data-seo-desc'));
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+})();
+</script>
