@@ -2,8 +2,8 @@
 namespace OSVCustomMeta\Providers;
 
 use Plenty\Plugin\ServiceProvider;
+use Plenty\Plugin\Log\Loggable;
 use Plenty\Plugin\Templates\TemplateContainer;
-use Plenty\Plugin\Log\Loggable;   // <- Log
 
 class OSVCustomMetaServiceProvider extends ServiceProvider
 {
@@ -14,11 +14,33 @@ class OSVCustomMetaServiceProvider extends ServiceProvider
         // nichts
     }
 
-    public function boot(TemplateContainer $container): void
+    public function boot(): void
     {
-        // HARTE PRÜFUNG
-        $this->getLogger(__CLASS__)->info('OSVCustomMeta booted', []);
+        // 1) Logger-Härtetest
+        $this->getLogger(__CLASS__)->info('OSVCustomMeta boot() reached', []);
 
-        // (Punkt 2 – Mapping – kommt hier rein)
+        // 2) TemplateContainer sicher holen (ohne DI-Typehint!)
+        /** @var TemplateContainer $container */
+        $container = pluginApp(TemplateContainer::class);
+
+        if (!$container) {
+            $this->getLogger(__CLASS__)->error('TemplateContainer not available', []);
+            return;
+        }
+
+        // 3) Zuordnungen (Mapping) — HARTE Marker
+        // SingleItemWrapper der Produktseite
+        $container->set(
+            'Ceres::Item.SingleItemWrapper',
+            'OSVCustomMeta::Item.SingleItemWrapper'
+        );
+
+        // PageMetaData-Partial im Head
+        $container->set(
+            'Ceres::PageDesign.Partials.PageMetaData',
+            'OSVCustomMeta::PageDesign/Partials/PageMetaData'
+        );
+
+        $this->getLogger(__CLASS__)->info('OSVCustomMeta mappings registered', []);
     }
 }
