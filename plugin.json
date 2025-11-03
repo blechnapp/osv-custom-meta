@@ -1,15 +1,13 @@
 {
   "name": "OSVCustomMeta",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "type": "template",
   "namespace": "OSVCustomMeta",
   "license": "MIT",
-  "description": "Setzt Meta Title und Description clientseitig über JS basierend auf Varianten-Eigenschaften.",
   "author": "Seiffener Volkskunst",
+  "description": "Test-Plugin: mappt Ceres-Views auf eigene Templates und loggt Boot.",
+  "serviceProvider": "OSVCustomMeta\\Providers\\OSVCustomMetaServiceProvider",
   "pluginSetEntries": [
-    {
-      "key": "template",
-      "value": "resources/views"
-    }
+    { "key": "template", "value": "resources/views" }
   ]
 }
