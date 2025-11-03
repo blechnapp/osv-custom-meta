@@ -1,0 +1,6 @@
+{% embed getTemplate('Ceres::Item.SingleItemWrapper') %}
+  {% block PartialHead %}
+    <meta name="x-osv-wrapper" content="active"/>
+    {{ parent() }}
+  {% endblock %}
+{% endembed %}
