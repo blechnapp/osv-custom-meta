@@ -1,0 +1,90 @@
+{% extends getPartial('page-design') %}
+{% import "Ceres::PageDesign.Macros.ItemName" as ItemName %}
+
+{% block PartialHead %}
+
+  {% set itemData = item.documents[0].data %}
+
+  {# --- IDs deiner Eigenschaften --- #}
+  {% set idTitle = 286 %}
+  {% set idDesc  = 287 %}
+
+  {# --- Werte initialisieren --- #}
+  {% set seoTitle = "" %}
+  {% set seoDescription = "" %}
+
+  {# --- VARIANTE: gruppierte UND flache Struktur unterstützen --- #}
+  {% set varProps = itemData.variationProperties | default([]) %}
+  {% for node in varProps %}
+    {% if node.properties is defined %}
+      {% for p in node.properties %}
+        {% if p.id == idTitle and seoTitle is empty %}
+          {% set seoTitle = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+        {% if p.id == idDesc and seoDescription is empty %}
+          {% set seoDescription = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% set p = node %}
+      {% if p.property is defined %}
+        {% if p.property.id == idTitle and seoTitle is empty %}
+          {% set seoTitle = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+        {% if p.property.id == idDesc and seoDescription is empty %}
+          {% set seoDescription = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {# --- ARTIKEL: falls auf Item-Ebene gepflegt --- #}
+  {% set itemProps = itemData.properties | default([]) %}
+  {% for node in itemProps %}
+    {% if node.properties is defined %}
+      {% for p in node.properties %}
+        {% if p.id == idTitle and seoTitle is empty %}
+          {% set seoTitle = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+        {% if p.id == idDesc and seoDescription is empty %}
+          {% set seoDescription = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      {% set p = node %}
+      {% if p.property is defined %}
+        {% if p.property.id == idTitle and seoTitle is empty %}
+          {% set seoTitle = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+        {% if p.property.id == idDesc and seoDescription is empty %}
+          {% set seoDescription = p.values.value | default(p.value | default('')) %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {# --- Ceres page-metadata einbetten & NUR die relevanten Blöcke überschreiben --- #}
+  {% embed getPartial('page-metadata') %}
+    {% block title %}
+      {% if seoTitle is not empty %}
+        {{ seoTitle }}
+      {% else %}
+        {{ itemData.texts.title | default(ItemName.get(itemData | itemName(webstoreConfig.urlTitleItemName - 1, ""), itemData.variation.bundleType)) }}
+      {% endif %}
+    {% endblock %}
+
+    {% block description %}
+      {% if seoDescription is not empty %}
+        {{ seoDescription }}
+      {% else %}
+        {{ itemData.texts.metaDescription }}
+      {% endif %}
+    {% endblock %}
+  {% endembed %}
+
+{% endblock %}
+
+{% block PageBody %}
+  {# Standard-Body der Artikelansicht #}
+  {% include "Ceres::Item.SingleItemView" %}
+{% endblock %}
