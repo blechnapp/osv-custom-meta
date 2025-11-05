@@ -1,8 +1,8 @@
 {
-  "name": "osv-custom-meta",
+  "name": "OSVCustomMeta",
   "type": "template",
-  "namespace": "osv-custom-meta",
-  "version": "1.2.2",
+  "namespace": "OSVCustomMeta",
+  "version": "1.2.3",
   "license": "proprietary",
   "pluginIcon": "",
   "pluginType": "template",
