@@ -1,7 +1,7 @@
 {
-  "name": "OvkSeoMetaOverride",
+  "name": "osv-custom-meta",
   "type": "template",
-  "namespace": "OvkSeoMetaOverride",
+  "namespace": "osv-custom-meta",
   "version": "1.2.2",
   "license": "proprietary",
   "pluginIcon": "",
