@@ -1,13 +1,12 @@
 {
-  "name": "OSVCustomMeta",
-  "version": "1.2.0",
+  "name": "OvkSeoMetaOverride",
   "type": "template",
-  "namespace": "OSVCustomMeta",
-  "license": "MIT",
-  "author": "Seiffener Volkskunst",
-  "description": "Test-Plugin: mappt Ceres-Views auf eigene Templates und loggt Boot.",
-  "serviceProvider": "OSVCustomMeta\\Providers\\OSVCustomMetaServiceProvider",
-  "pluginSetEntries": [
-    { "key": "template", "value": "resources/views" }
-  ]
+  "namespace": "OvkSeoMetaOverride",
+  "version": "1.2.1",
+  "license": "proprietary",
+  "pluginIcon": "",
+  "pluginType": "template",
+  "dependencies": {
+    "Ceres": ">=5.0.0"
+  }
 }
