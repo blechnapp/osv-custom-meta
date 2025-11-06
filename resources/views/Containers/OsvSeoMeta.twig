@@ -1,44 +1,41 @@
-{# ========== OSV CUSTOM META (SSR) — wird im Container „Template: Style“ eingebunden ========== #}
-{# Hilfs-Makro #}
+{# ========== OSV CUSTOM META (SSR) ========== #}
+{# Hilfs-Makro zum Säubern #}
 {% macro clean(txt) %}
   {{- (txt|string)|striptags|trim|replace({'\n':' ','\r':' '})|replace({'  ':' '}) -}}
 {% endmacro %}
 {% import _self as H %}
 
-{# Aktuelles Template #}
+{# Abkürzung für Template-Check #}
 {% set is = services.template.isCurrentTemplate %}
-{% set page = services.template.getCurrentTemplate() %}
+{% set current = services.template.getCurrentTemplate() %}
 
 {# Fallbacks #}
 {% set shopName = ceresConfig.header.companyName ?: 'Shop' %}
-{% set title    = shopName %}
-{% set desc     = '' %}
+{% set title = shopName %}
+{% set desc  = '' %}
 
-{# ===== Startseite ===== #}
+{# Startseite #}
 {% if is('tpl.home') or is('tpl.home.category') %}
   {% set title = shopName ~ ' | Offizieller Shop' %}
   {% set desc  = 'Neuheiten, Klassiker & Angebote – jetzt ' ~ shopName ~ ' entdecken.' %}
 
-{# ===== Artikelseite ===== #}
+{# Artikelseite #}
 {% elseif is('tpl.item') and item is defined and item.documents|length > 0 %}
   {% set d       = item.documents[0].data %}
   {% set name    = d.texts.name1 ?? d.texts.name2 ?? d.texts.name3 ?? '' %}
   {% set brand   = d.manufacturer.name ?? '' %}
-  {% set cat     = (d.defaultCategories|length > 0) ? d.defaultCategories[0].details[0].name : '' %}
-
-  {# Title #}
+  {% set cat     = (d.defaultCategories|length > 0) ? (d.defaultCategories[0].details[0].name ?? '') : '' %}
   {% set t_core  = H.clean(name) ~ (brand ? ' | ' ~ H.clean(brand) : '') %}
   {% set title   = (t_core ? t_core ~ ' | ' : '') ~ shopName %}
 
-  {# Description: bevorzugt Meta-Feld, sonst Kurztext, sonst generiert #}
   {% set metaDesc = d.texts.metaDescription ?? '' %}
   {% if not metaDesc %}
     {% set short   = d.texts.shortDescription ?? '' %}
     {% set metaDesc = short ? H.clean(short) : ('Jetzt ' ~ H.clean(name) ~ (brand ? ' von ' ~ H.clean(brand) : '') ~ ' online kaufen bei ' ~ shopName ~ (cat ? ' – Kategorie: ' ~ H.clean(cat) : '')) %}
   {% endif %}
-  {% set desc = metaDesc|slice(0, 160) %}
+  {% set desc = metaDesc|slice(0,160) %}
 
-{# ===== Kategorie: Artikel ===== #}
+{# Kategorie (Artikel) #}
 {% elseif is('tpl.category.item') and services.category.getCurrentCategory() %}
   {% set c      = services.category.getCurrentCategory() %}
   {% set cname  = c.details[0].name ?? '' %}
@@ -46,28 +43,24 @@
   {% set title  = (cname ? H.clean(cname) ~ ' | ' : '') ~ shopName %}
   {% set desc   = cdesc ? H.clean(cdesc)|slice(0,160) : ('Jetzt ' ~ H.clean(cname) ~ ' bei ' ~ shopName ~ ' entdecken.') %}
 
-{# ===== Suche ===== #}
+{# Suche #}
 {% elseif is('tpl.search') and request.get('query') %}
   {% set q     = request.get('query') %}
   {% set title = 'Suche: "' ~ H.clean(q) ~ '" | ' ~ shopName %}
   {% set desc  = 'Suchergebnisse für "' ~ H.clean(q) ~ '" bei ' ~ shopName %}
 
-{# ===== Sonstige Seiten ===== #}
+{# Fallback #}
 {% else %}
-  {% set nice  = page ?? 'Seite' %}
+  {% set nice  = current ?? 'Seite' %}
   {% set title = nice ~ ' | ' ~ shopName %}
   {% set desc  = 'Jetzt ' ~ shopName ~ ' besuchen – Infos, Produkte & Service.' %}
 {% endif %}
 
-{# ===== Ausgabe im <head> (SSR) ===== #}
+{# Ausgabe im <head> #}
 <title>{{ title }}</title>
 <meta name="description" content="{{ desc }}">
-
-{# Open Graph als Bonus (nicht Pflicht, aber sinnvoll) #}
 <meta property="og:title" content="{{ title }}">
 <meta property="og:description" content="{{ desc }}">
-
-{# Canonical, falls verfügbar #}
 {% if services.routing.getCanonicalUrl() %}
   <link rel="canonical" href="{{ services.routing.getCanonicalUrl() }}">
 {% endif %}
