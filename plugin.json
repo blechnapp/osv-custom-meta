@@ -2,7 +2,7 @@
   "name": "OSVCustomMeta",
   "type": "template",
   "namespace": "OSVCustomMeta",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "license": "proprietary",
   "pluginType": "template",
   "author": "OSV",
@@ -10,12 +10,5 @@
   "categories": ["template"],
   "dependencies": {
     "Ceres": ">=5.0.0"
-  },
-  "containers": {
-    "Ceres::Template.Style": {
-      "First item list": {
-        "template": "OSVCustomMeta::Containers.OsvSeoMeta"
-      }
-    }
   }
 }
