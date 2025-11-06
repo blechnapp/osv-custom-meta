@@ -2,14 +2,14 @@
   "name": "OSVCustomMeta",
   "type": "template",
   "namespace": "OSVCustomMeta",
-  "version": "1.3.1",  // Inkrementieren für LTS
+  "version": "1.3.1",
   "license": "proprietary",
   "pluginType": "template",
   "author": "OSV",
   "shortDescription": "Serverseitige (SSR) Meta-Title & Meta-Description für plentyShop LTS.",
   "categories": ["template"],
   "dependencies": {
-    "plentyShop LTS": ">=5.0.0",
+    "plentyShopLTS": ">=5.0.0",
     "IO": ">=5.0.0"
   },
   "serviceProvider": "OSVCustomMeta\\Providers\\OSVServiceProvider",
@@ -18,7 +18,7 @@
       "key": "OSVCustomMeta\\Containers\\MetaHeadContainer",
       "name": "OSV Custom Meta (Head)",
       "description": "Gibt serverseitig <title> & <meta name=\"description\"> im <head> aus.",
-      "defaultLayoutContainer": "plentyShop LTS::Head.Meta"
+      "defaultLayoutContainer": "plentyshop-lts::Head"
     }
   ]
 }
