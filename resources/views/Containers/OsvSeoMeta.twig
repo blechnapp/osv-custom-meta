@@ -1,48 +1,109 @@
-{# ========== OSV CUSTOM META (SSR) ========== #}
+{# ========== OSV CUSTOM META (SSR) | OVK ========== #}
+{# -- Konfiguration: Eigenschafts-IDs für Title & Description -- #}
+{% set PROP_TITLE_ID = 286 %}
+{% set PROP_DESC_ID  = 287 %}
+
+{# Hilfs-Makros #}
 {% macro clean(txt) %}
-  {{- (txt|string)|striptags|trim|replace({'\n':' ','\r':' '})|replace({'  ':' '}) -}}
+  {{- (txt|string)
+      | striptags
+      | trim
+      | replace({'\n':' ','\r':' '})
+      | replace({'  ':' '})
+  -}}
 {% endmacro %}
+
+{# Liefert den Wert einer Eigenschaft (beliebige Struktur) aus einer Liste zurück #}
+{% macro propVal(list, pid) %}
+  {% set out = '' %}
+  {% for p in list|default([]) if out == '' %}
+    {# plenty-Strukturen variieren: p.id ODER p.property.id #}
+    {% set _pid = p.property.id ?? p.id ?? null %}
+    {% if _pid == pid %}
+      {# mögliche Value-Felder abklopfen #}
+      {% set v = p.values[0].value
+                ?? p.values[0].texts.value
+                ?? p.texts.value
+                ?? p.value
+                ?? '' %}
+      {% if v is iterable %}{% set v = v|join(' ') %}{% endif %}
+      {% set out = v %}
+    {% endif %}
+  {% endfor %}
+  {{- out -}}
+{% endmacro %}
+
 {% import _self as H %}
 
-{% set is = services.template.isCurrentTemplate %}
-{% set current = services.template.getCurrentTemplate() %}
-
+{# Abkürzungen #}
+{% set is       = services.template.isCurrentTemplate %}
+{% set current  = services.template.getCurrentTemplate() %}
 {% set shopName = ceresConfig.header.companyName ?: 'Shop' %}
+
+{# Default #}
 {% set title = shopName %}
 {% set desc  = '' %}
 
-{% if is('tpl.home') or is('tpl.home.category') %}
+{# ======= Artikelseite: zuerst Properties 286/287 auslesen ======= #}
+{% if is('tpl.item') and item is defined and item.documents|length > 0 %}
+  {% set d = item.documents[0].data %}
+
+  {# 1) SEO-Title aus Property 286 (Variation → Item → (optional) weitere Listen) #}
+  {% set titleProp = H.propVal(d.variationProperties ?? [], PROP_TITLE_ID) %}
+  {% if not titleProp %}
+    {% set titleProp = H.propVal(d.properties ?? [], PROP_TITLE_ID) %}
+  {% endif %}
+  {% if not titleProp and d.item and d.item.properties is defined %}
+    {% set titleProp = H.propVal(d.item.properties, PROP_TITLE_ID) %}
+  {% endif %}
+
+  {# 2) SEO-Description aus Property 287 #}
+  {% set descProp = H.propVal(d.variationProperties ?? [], PROP_DESC_ID) %}
+  {% if not descProp %}
+    {% set descProp = H.propVal(d.properties ?? [], PROP_DESC_ID) %}
+  {% endif %}
+  {% if not descProp and d.item and d.item.properties is defined %}
+    {% set descProp = H.propVal(d.item.properties, PROP_DESC_ID) %}
+  {% endif %}
+
+  {# 3) Fallbacks, falls Properties leer sind #}
+  {% set name1    = d.texts.name1 ?? d.texts.name2 ?? d.texts.name3 ?? '' %}
+  {% set brand    = d.manufacturer.name ?? '' %}
+  {% set metaDesc = descProp ?: (d.texts.metaDescription ?? '') %}
+  {% if not metaDesc %}
+    {% set short = d.texts.shortDescription ?? '' %}
+    {% set metaDesc = short ? H.clean(short) : '' %}
+  {% endif %}
+
+  {% set title = (titleProp ? H.clean(titleProp) : H.clean(name1)) ~ (brand ? ' | ' ~ H.clean(brand) : '') ~ ' | ' ~ shopName %}
+  {% set desc  = H.clean(metaDesc)|slice(0,160) %}
+
+{# ======= Startseite ======= #}
+{% elseif is('tpl.home') or is('tpl.home.category') %}
   {% set title = shopName ~ ' | Offizieller Shop' %}
   {% set desc  = 'Neuheiten, Klassiker & Angebote – jetzt ' ~ shopName ~ ' entdecken.' %}
-{% elseif is('tpl.item') and item is defined and item.documents|length > 0 %}
-  {% set d       = item.documents[0].data %}
-  {% set name    = d.texts.name1 ?? d.texts.name2 ?? d.texts.name3 ?? '' %}
-  {% set brand   = d.manufacturer.name ?? '' %}
-  {% set cat     = (d.defaultCategories|length > 0) ? (d.defaultCategories[0].details[0].name ?? '') : '' %}
-  {% set t_core  = H.clean(name) ~ (brand ? ' | ' ~ H.clean(brand) : '') %}
-  {% set title   = (t_core ? t_core ~ ' | ' : '') ~ shopName %}
-  {% set metaDesc = d.texts.metaDescription ?? '' %}
-  {% if not metaDesc %}
-    {% set short   = d.texts.shortDescription ?? '' %}
-    {% set metaDesc = short ? H.clean(short) : ('Jetzt ' ~ H.clean(name) ~ (brand ? ' von ' ~ H.clean(brand) : '') ~ ' online kaufen bei ' ~ shopName ~ (cat ? ' – Kategorie: ' ~ H.clean(cat) : '')) %}
-  {% endif %}
-  {% set desc = metaDesc|slice(0,160) %}
+
+{# ======= Kategorie (Artikel) ======= #}
 {% elseif is('tpl.category.item') and services.category.getCurrentCategory() %}
-  {% set c      = services.category.getCurrentCategory() %}
-  {% set cname  = c.details[0].name ?? '' %}
-  {% set cdesc  = c.details[0].description ?? '' %}
-  {% set title  = (cname ? H.clean(cname) ~ ' | ' : '') ~ shopName %}
-  {% set desc   = cdesc ? H.clean(cdesc)|slice(0,160) : ('Jetzt ' ~ H.clean(cname) ~ ' bei ' ~ shopName ~ ' entdecken.') %}
+  {% set c     = services.category.getCurrentCategory() %}
+  {% set cname = c.details[0].name ?? '' %}
+  {% set cdesc = c.details[0].description ?? '' %}
+  {% set title = (cname ? H.clean(cname) ~ ' | ' : '') ~ shopName %}
+  {% set desc  = cdesc ? H.clean(cdesc)|slice(0,160) : ('Jetzt ' ~ H.clean(cname) ~ ' bei ' ~ shopName ~ ' entdecken.') %}
+
+{# ======= Suche ======= #}
 {% elseif is('tpl.search') and request.get('query') %}
   {% set q     = request.get('query') %}
   {% set title = 'Suche: "' ~ H.clean(q) ~ '" | ' ~ shopName %}
   {% set desc  = 'Suchergebnisse für "' ~ H.clean(q) ~ '" bei ' ~ shopName %}
+
+{# ======= Fallback ======= #}
 {% else %}
-  {% set nice  = current ?? 'Seite' %}
-  {% set title = nice ~ ' | ' ~ shopName %}
+  {% set title = (current ?? 'Seite') ~ ' | ' ~ shopName %}
   {% set desc  = 'Jetzt ' ~ shopName ~ ' besuchen – Infos, Produkte & Service.' %}
 {% endif %}
 
+{# ======= Ausgabe im <head> ======= #}
 <title>{{ title }}</title>
 <meta name="description" content="{{ desc }}">
 <meta property="og:title" content="{{ title }}">
@@ -50,4 +111,4 @@
 {% if services.routing.getCanonicalUrl() %}
   <link rel="canonical" href="{{ services.routing.getCanonicalUrl() }}">
 {% endif %}
-{# ========== /OSV CUSTOM META ========== #}
+{# ========== /OVK ========== #}
