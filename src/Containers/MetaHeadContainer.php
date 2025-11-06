@@ -8,7 +8,7 @@ class MetaHeadContainer
 {
     public function call(Twig $twig): string
     {
-        // Rendert unser Twig-Template für den <head>-Bereich
+        // Rendert unser Twig ins <head>-Element
         return $twig->render('OSVCustomMeta::Containers.OsvSeoMeta');
     }
 }
