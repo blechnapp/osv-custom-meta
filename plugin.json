@@ -2,23 +2,21 @@
   "name": "OSVCustomMeta",
   "type": "template",
   "namespace": "OSVCustomMeta",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "license": "proprietary",
   "pluginType": "template",
   "author": "OSV",
-  "shortDescription": "Serverseitige (SSR) Meta-Title & Meta-Description für plentyShop LTS.",
+  "shortDescription": "Serverseitige (SSR) Meta-Title & Meta-Description für Ceres.",
   "categories": ["template"],
   "dependencies": {
-    "plentyShopLTS": ">=5.0.0",
+    "Ceres": ">=5.0.0",
     "IO": ">=5.0.0"
   },
-  "serviceProvider": "OSVCustomMeta\\Providers\\OSVServiceProvider",
-  "dataProviders": [
-    {
-      "key": "OSVCustomMeta\\Containers\\MetaHeadContainer",
-      "name": "OSV Custom Meta (Head)",
-      "description": "Gibt serverseitig <title> & <meta name=\"description\"> im <head> aus.",
-      "defaultLayoutContainer": "plentyshop-lts::Head"
+  "containers": {
+    "Ceres::Template.Style": {
+      "First item list": {
+        "template": "OSVCustomMeta::Containers.OsvSeoMeta"
+      }
     }
-  ]
+  }
 }
