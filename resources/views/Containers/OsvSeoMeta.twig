@@ -1,9 +1,7 @@
-{# ========== OSV CUSTOM META (SSR) | OVK ========== #}
-{# -- Konfiguration: Eigenschafts-IDs für Title & Description -- #}
+{# ========== OSV CUSTOM META (SSR) | OVK Debug-Version ========== #}
 {% set PROP_TITLE_ID = 286 %}
 {% set PROP_DESC_ID  = 287 %}
 
-{# Hilfs-Makros #}
 {% macro clean(txt) %}
   {{- (txt|string)
       | striptags
@@ -13,14 +11,11 @@
   -}}
 {% endmacro %}
 
-{# Liefert den Wert einer Eigenschaft (beliebige Struktur) aus einer Liste zurück #}
 {% macro propVal(list, pid) %}
   {% set out = '' %}
   {% for p in list|default([]) if out == '' %}
-    {# plenty-Strukturen variieren: p.id ODER p.property.id #}
     {% set _pid = p.property.id ?? p.id ?? null %}
     {% if _pid == pid %}
-      {# mögliche Value-Felder abklopfen #}
       {% set v = p.values[0].value
                 ?? p.values[0].texts.value
                 ?? p.texts.value
@@ -34,21 +29,18 @@
 {% endmacro %}
 
 {% import _self as H %}
-
-{# Abkürzungen #}
-{% set is       = services.template.isCurrentTemplate %}
-{% set current  = services.template.getCurrentTemplate() %}
 {% set shopName = ceresConfig.header.companyName ?: 'Shop' %}
-
-{# Default #}
 {% set title = shopName %}
 {% set desc  = '' %}
 
-{# ======= Artikelseite: zuerst Properties 286/287 auslesen ======= #}
-{% if is('tpl.item') and item is defined and item.documents|length > 0 %}
+{% if services.template.isCurrentTemplate('tpl.item') and item is defined and item.documents|length > 0 %}
   {% set d = item.documents[0].data %}
 
-  {# 1) SEO-Title aus Property 286 (Variation → Item → (optional) weitere Listen) #}
+  {# --- Debug-Ausgabe in Kommentar --- #}
+  <!-- OSV Debug: Felder im Item -->
+  <!-- Keys: {{ d|keys|join(', ') }} -->
+
+  {# === Versuche verschiedene Pfade === #}
   {% set titleProp = H.propVal(d.variationProperties ?? [], PROP_TITLE_ID) %}
   {% if not titleProp %}
     {% set titleProp = H.propVal(d.properties ?? [], PROP_TITLE_ID) %}
@@ -56,8 +48,13 @@
   {% if not titleProp and d.item and d.item.properties is defined %}
     {% set titleProp = H.propVal(d.item.properties, PROP_TITLE_ID) %}
   {% endif %}
+  {% if not titleProp and d.baseProperties is defined %}
+    {% set titleProp = H.propVal(d.baseProperties, PROP_TITLE_ID) %}
+  {% endif %}
+  {% if not titleProp and d.variationPropertiesWithoutGroup is defined %}
+    {% set titleProp = H.propVal(d.variationPropertiesWithoutGroup, PROP_TITLE_ID) %}
+  {% endif %}
 
-  {# 2) SEO-Description aus Property 287 #}
   {% set descProp = H.propVal(d.variationProperties ?? [], PROP_DESC_ID) %}
   {% if not descProp %}
     {% set descProp = H.propVal(d.properties ?? [], PROP_DESC_ID) %}
@@ -65,8 +62,13 @@
   {% if not descProp and d.item and d.item.properties is defined %}
     {% set descProp = H.propVal(d.item.properties, PROP_DESC_ID) %}
   {% endif %}
+  {% if not descProp and d.baseProperties is defined %}
+    {% set descProp = H.propVal(d.baseProperties, PROP_DESC_ID) %}
+  {% endif %}
+  {% if not descProp and d.variationPropertiesWithoutGroup is defined %}
+    {% set descProp = H.propVal(d.variationPropertiesWithoutGroup, PROP_DESC_ID) %}
+  {% endif %}
 
-  {# 3) Fallbacks, falls Properties leer sind #}
   {% set name1    = d.texts.name1 ?? d.texts.name2 ?? d.texts.name3 ?? '' %}
   {% set brand    = d.manufacturer.name ?? '' %}
   {% set metaDesc = descProp ?: (d.texts.metaDescription ?? '') %}
@@ -78,32 +80,11 @@
   {% set title = (titleProp ? H.clean(titleProp) : H.clean(name1)) ~ (brand ? ' | ' ~ H.clean(brand) : '') ~ ' | ' ~ shopName %}
   {% set desc  = H.clean(metaDesc)|slice(0,160) %}
 
-{# ======= Startseite ======= #}
-{% elseif is('tpl.home') or is('tpl.home.category') %}
-  {% set title = shopName ~ ' | Offizieller Shop' %}
-  {% set desc  = 'Neuheiten, Klassiker & Angebote – jetzt ' ~ shopName ~ ' entdecken.' %}
-
-{# ======= Kategorie (Artikel) ======= #}
-{% elseif is('tpl.category.item') and services.category.getCurrentCategory() %}
-  {% set c     = services.category.getCurrentCategory() %}
-  {% set cname = c.details[0].name ?? '' %}
-  {% set cdesc = c.details[0].description ?? '' %}
-  {% set title = (cname ? H.clean(cname) ~ ' | ' : '') ~ shopName %}
-  {% set desc  = cdesc ? H.clean(cdesc)|slice(0,160) : ('Jetzt ' ~ H.clean(cname) ~ ' bei ' ~ shopName ~ ' entdecken.') %}
-
-{# ======= Suche ======= #}
-{% elseif is('tpl.search') and request.get('query') %}
-  {% set q     = request.get('query') %}
-  {% set title = 'Suche: "' ~ H.clean(q) ~ '" | ' ~ shopName %}
-  {% set desc  = 'Suchergebnisse für "' ~ H.clean(q) ~ '" bei ' ~ shopName %}
-
-{# ======= Fallback ======= #}
 {% else %}
-  {% set title = (current ?? 'Seite') ~ ' | ' ~ shopName %}
-  {% set desc  = 'Jetzt ' ~ shopName ~ ' besuchen – Infos, Produkte & Service.' %}
+  {% set title = shopName %}
+  {% set desc = 'Jetzt ' ~ shopName ~ ' besuchen – handgefertigte Kunst & Figuren.' %}
 {% endif %}
 
-{# ======= Ausgabe im <head> ======= #}
 <title>{{ title }}</title>
 <meta name="description" content="{{ desc }}">
 <meta property="og:title" content="{{ title }}">
@@ -111,4 +92,3 @@
 {% if services.routing.getCanonicalUrl() %}
   <link rel="canonical" href="{{ services.routing.getCanonicalUrl() }}">
 {% endif %}
-{# ========== /OVK ========== #}
