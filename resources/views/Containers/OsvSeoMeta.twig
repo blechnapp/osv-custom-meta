@@ -1,15 +1,12 @@
 {# ========== OSV CUSTOM META (SSR) ========== #}
-{# Hilfs-Makro zum Säubern #}
 {% macro clean(txt) %}
   {{- (txt|string)|striptags|trim|replace({'\n':' ','\r':' '})|replace({'  ':' '}) -}}
 {% endmacro %}
 {% import _self as H %}
 
-{# Abkürzung für Template-Check #}
 {% set is = services.template.isCurrentTemplate %}
 {% set current = services.template.getCurrentTemplate() %}
 
-{# Fallbacks #}
 {% set shopName = ceresConfig.header.companyName ?: 'Shop' %}
 {% set title = shopName %}
 {% set desc  = '' %}
@@ -56,7 +53,6 @@
   {% set desc  = 'Jetzt ' ~ shopName ~ ' besuchen – Infos, Produkte & Service.' %}
 {% endif %}
 
-{# Ausgabe im <head> #}
 <title>{{ title }}</title>
 <meta name="description" content="{{ desc }}">
 <meta property="og:title" content="{{ title }}">
