@@ -19,7 +19,6 @@ class OSVServiceProvider extends ServiceProvider
             'IO.ctx.item',
             function (TemplateContainer $templateContainer, $templateData = []) {
                 $templateContainer->setContext(CustomSingleItemContext::class);
-                return false;
             },
             0
         );
