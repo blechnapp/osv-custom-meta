@@ -1,6 +1,8 @@
-{# ========== OSV CUSTOM META (SSR) v1.5.0 ========== #}
+{# ========== OSV CUSTOM META (SSR) v1.5.1 ========== #}
+<!-- OSV-META-START -->
 {% set PROP_TITLE_ID = 288 %}
 {% set PROP_DESC_ID  = 289 %}
+{% set shopName = 'Seiffener Volkskunst' %}
 
 {% macro clean(txt) %}
   {{- (txt|string)
@@ -12,11 +14,10 @@
 {% endmacro %}
 
 {% import _self as H %}
-{% set shopName = ceresConfig.header.companyName ?: 'Shop' %}
 {% set title = shopName %}
 {% set desc  = '' %}
 
-{% if services.template.isCurrentTemplate('tpl.item') and item is defined and item.documents|length > 0 %}
+{% if item is defined and item.documents is defined and item.documents|length > 0 %}
   {% set d = item.documents[0].data %}
 
   {# Suche Properties in variationProperties (gruppierte Struktur) #}
@@ -25,32 +26,29 @@
   {% for group in d.variationProperties|default([]) %}
     {% for prop in group.properties|default([]) %}
       {% if prop.id == PROP_TITLE_ID and titleProp == '' %}
-        {% set titleProp = prop.values.value ?? '' %}
+        {% set titleProp = prop.values.value|default('') %}
       {% endif %}
       {% if prop.id == PROP_DESC_ID and descProp == '' %}
-        {% set descProp = prop.values.value ?? '' %}
+        {% set descProp = prop.values.value|default('') %}
       {% endif %}
     {% endfor %}
   {% endfor %}
 
-  {% set name1 = d.texts.name1 ?? d.texts.name2 ?? d.texts.name3 ?? '' %}
-  {% set brand = d.manufacturer.name ?? '' %}
+  {% set name1 = d.texts.name1|default('') %}
+  {% set brand = d.manufacturer.name|default('') %}
 
-  {% set metaDesc = descProp ?: (d.texts.metaDescription ?? '') %}
+  {% set metaDesc = descProp ? descProp : d.texts.metaDescription|default('') %}
   {% if not metaDesc %}
-    {% set short = d.texts.shortDescription ?? '' %}
-    {% set metaDesc = short ? H.clean(short) : '' %}
+    {% set metaDesc = d.texts.shortDescription|default('') %}
   {% endif %}
 
   {% set title = (titleProp ? H.clean(titleProp) : H.clean(name1)) ~ (brand ? ' | ' ~ H.clean(brand) : '') ~ ' | ' ~ shopName %}
   {% set desc  = H.clean(metaDesc)|slice(0,160) %}
 
-{% else %}
-  {% set title = shopName %}
-  {% set desc = 'Jetzt ' ~ shopName ~ ' besuchen.' %}
 {% endif %}
 
 <title>{{ title }}</title>
 <meta name="description" content="{{ desc }}">
 <meta property="og:title" content="{{ title }}">
 <meta property="og:description" content="{{ desc }}">
+<!-- OSV-META-END -->
