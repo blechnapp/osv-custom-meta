@@ -18,7 +18,7 @@
       "key": "OSVCustomMeta\\Containers\\MetaHeadContainer",
       "name": "OSV Custom Meta (Head)",
       "description": "Gibt serverseitig <title> & <meta name=\"description\"> im <head> aus.",
-      "defaultLayoutContainer": "Ceres::PageDesign.AfterOpeningHeadTag"
+      "defaultLayoutContainer": "Ceres::Template.Style"
     }
   ]
 }
