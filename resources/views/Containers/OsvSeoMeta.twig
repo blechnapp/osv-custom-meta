@@ -46,4 +46,15 @@
 <meta property="og:title" content="{{ metaTitle }}">
 <meta property="og:description" content="{{ metaDesc|slice(0,160) }}">
 {% endif %}
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var titles=document.querySelectorAll('title');
+  for(var i=1;i<titles.length;i++){titles[i].remove();}
+  var seen={};
+  document.querySelectorAll('meta[property="og:title"],meta[property="og:description"],meta[name="description"]').forEach(function(m){
+    var k=m.getAttribute('property')||m.getAttribute('name');
+    if(seen[k]){m.remove();}else{seen[k]=true;}
+  });
+});
+</script>
 <!-- OSV-META-END -->
