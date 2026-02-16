@@ -8,6 +8,9 @@
   "author": "OSV",
   "shortDescription": "Serverseitige (SSR) Meta-Title & Meta-Description für Ceres.",
   "categories": ["template"],
+  "require": {
+    "php": ">=7.4"
+  },
   "dependencies": {
     "Ceres": ">=5.0.0",
     "IO": ">=5.0.0"
