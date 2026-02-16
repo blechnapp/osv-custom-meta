@@ -1,41 +1,56 @@
-{# ========== OSV CUSTOM META (SSR) v1.4.2 DEBUG ========== #}
-<!-- OSV-DEBUG: Template wird gerendert -->
+{# ========== OSV CUSTOM META (SSR) v1.5.0 ========== #}
+{% set PROP_TITLE_ID = 288 %}
+{% set PROP_DESC_ID  = 289 %}
 
-{% if item is defined and item.documents|length > 0 %}
+{% macro clean(txt) %}
+  {{- (txt|string)
+      | striptags
+      | trim
+      | replace({'\n':' ','\r':' '})
+      | replace({'  ':' '})
+  -}}
+{% endmacro %}
+
+{% import _self as H %}
+{% set shopName = ceresConfig.header.companyName ?: 'Shop' %}
+{% set title = shopName %}
+{% set desc  = '' %}
+
+{% if services.template.isCurrentTemplate('tpl.item') and item is defined and item.documents|length > 0 %}
   {% set d = item.documents[0].data %}
 
-  <!-- OSV-DEBUG: item-keys={{ d.item|keys|join(', ') }} -->
-
-  {% if d.item.properties is defined %}
-    <!-- OSV-DEBUG: item.propertiesCount={{ d.item.properties|length }} -->
-    {% for p in d.item.properties %}
-      <!-- OSV-DEBUG: item.prop={{ p|json_encode }} -->
+  {# Suche Properties in variationProperties (gruppierte Struktur) #}
+  {% set titleProp = '' %}
+  {% set descProp  = '' %}
+  {% for group in d.variationProperties|default([]) %}
+    {% for prop in group.properties|default([]) %}
+      {% if prop.id == PROP_TITLE_ID and titleProp == '' %}
+        {% set titleProp = prop.values.value ?? '' %}
+      {% endif %}
+      {% if prop.id == PROP_DESC_ID and descProp == '' %}
+        {% set descProp = prop.values.value ?? '' %}
+      {% endif %}
     {% endfor %}
-  {% else %}
-    <!-- OSV-DEBUG: item.properties=NICHT VORHANDEN -->
-  {% endif %}
-
-  <!-- OSV-DEBUG: variationProperties IDs: -->
-  {% for p in d.variationProperties|default([]) %}
-    <!-- OSV-DEBUG: varProp full={{ p|json_encode }} -->
   {% endfor %}
 
-  <!-- OSV-DEBUG: properties IDs: -->
-  {% for p in d.properties|default([]) %}
-    <!-- OSV-DEBUG: prop full={{ p|json_encode }} -->
-  {% endfor %}
+  {% set name1 = d.texts.name1 ?? d.texts.name2 ?? d.texts.name3 ?? '' %}
+  {% set brand = d.manufacturer.name ?? '' %}
 
-  {% if d.characteristics is defined %}
-    <!-- OSV-DEBUG: characteristicsCount={{ d.characteristics|length }} -->
-    {% for c in d.characteristics %}
-      <!-- OSV-DEBUG: characteristic={{ c|json_encode }} -->
-    {% endfor %}
-  {% else %}
-    <!-- OSV-DEBUG: characteristics=NICHT VORHANDEN -->
+  {% set metaDesc = descProp ?: (d.texts.metaDescription ?? '') %}
+  {% if not metaDesc %}
+    {% set short = d.texts.shortDescription ?? '' %}
+    {% set metaDesc = short ? H.clean(short) : '' %}
   {% endif %}
+
+  {% set title = (titleProp ? H.clean(titleProp) : H.clean(name1)) ~ (brand ? ' | ' ~ H.clean(brand) : '') ~ ' | ' ~ shopName %}
+  {% set desc  = H.clean(metaDesc)|slice(0,160) %}
 
 {% else %}
-  <!-- OSV-DEBUG: kein Item -->
+  {% set title = shopName %}
+  {% set desc = 'Jetzt ' ~ shopName ~ ' besuchen.' %}
 {% endif %}
 
-<!-- OSV-DEBUG-END -->
+<title>{{ title }}</title>
+<meta name="description" content="{{ desc }}">
+<meta property="og:title" content="{{ title }}">
+<meta property="og:description" content="{{ desc }}">
