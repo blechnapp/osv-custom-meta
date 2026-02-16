@@ -36,6 +36,27 @@ Die Eigenschaften 288 und 289 muessen wie folgt konfiguriert sein:
 2. Im Bereich **Eigenschaften** die Eigenschaft "Meta Title" (288) und "Meta Description" (289) befuellen
 3. Speichern
 
+### Wichtig: Verbotene Sonderzeichen
+
+Folgende Zeichen duerfen **nicht** in den Eigenschaftswerten verwendet werden:
+
+| Zeichen | Problem | Alternative |
+|---|---|---|
+| **&amp;** (kaufmaennisches Und) | Wird doppelt kodiert und erscheint fehlerhaft in Suchergebnissen | **und** oder **+** verwenden |
+| **&lt;** und **&gt;** | Werden als HTML-Code interpretiert | Weglassen |
+| **"** (gerade Anfuehrungszeichen) | Kann HTML-Attribute brechen | Typografische Zeichen oder weglassen |
+
+### Empfehlungen fuer Meta-Texte
+
+**Meta Title (Eigenschaft 288):**
+- Max. 35 Zeichen (Shopname wird automatisch angehaengt)
+- Wichtigste Keywords an den Anfang
+
+**Meta Description (Eigenschaft 289):**
+- Max. 155-160 Zeichen
+- Soll zum Klicken animieren
+- Wichtigste Keywords einbauen
+
 ## Installation
 
 1. Plugin ueber GitHub-Repository in ein Plugin-Set importieren
