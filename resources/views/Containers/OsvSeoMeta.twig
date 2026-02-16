@@ -1,1 +1,4 @@
-{# Nicht mehr verwendet - Meta-Daten werden serverseitig via CustomSingleItemContext gesetzt #}
+{% if item is defined and item.documents is defined and item.documents|length > 0 %}
+{% set desc = item.documents[0].data.texts.metaDescription|default('') %}
+{% if desc %}<meta property="og:description" content="{{ desc|striptags|trim|slice(0,160) }}">{% endif %}
+{% endif %}

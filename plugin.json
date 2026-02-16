@@ -2,7 +2,7 @@
   "name": "OSVCustomMeta",
   "type": "template",
   "namespace": "OSVCustomMeta",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "license": "proprietary",
   "pluginType": "template",
   "author": "OSV",
@@ -12,5 +12,13 @@
     "Ceres": ">=5.0.0",
     "IO": ">=5.0.0"
   },
-  "serviceProvider": "OSVCustomMeta\\Providers\\OSVServiceProvider"
+  "serviceProvider": "OSVCustomMeta\\Providers\\OSVServiceProvider",
+  "dataProviders": [
+    {
+      "key": "OSVCustomMeta\\Containers\\MetaHeadContainer",
+      "name": "OSV OG Description",
+      "description": "Gibt og:description im head aus.",
+      "defaultLayoutContainer": "Ceres::Template.Style"
+    }
+  ]
 }

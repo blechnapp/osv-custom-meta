@@ -1,45 +1,36 @@
-# OSVCustomMeta
+# OSVCustomMeta v2.1.0
 
-Serverseitige (SSR) Ausgabe von `<title>` und `<meta name="description">` für Plentymarkets Ceres.
+Serverseitige (SSR) Meta-Title & Meta-Description aus Artikel-Eigenschaften fuer Plentymarkets Ceres.
 
-## Was macht das Plugin?
+## Funktionsweise
 
-Liest die Eigenschaften (Properties) **286** (Meta Title) und **287** (Meta Description) aus und setzt sie als `<title>`, `<meta name="description">`, `og:title` und `og:description` im HTML-Head.
+- **Eigenschaft 288** (Meta Title) → `<title>`, `og:title`
+- **Eigenschaft 289** (Meta Description) → `<meta name="description">`, `og:description`
+- Fallback auf Ceres-Standard wenn Eigenschaft leer
+- Shopname "Seiffener Volkskunst" wird automatisch angehaengt
 
-**Fallback-Kette:**
-- Title: Property 286 → `texts.name1` → Shopname
-- Description: Property 287 → `texts.metaDescription` → `texts.shortDescription`
+## Technischer Ansatz
+
+1. **PHP Context Override** (`CustomSingleItemContext`): Ueberschreibt `texts.title` und `texts.metaDescription` bevor Ceres rendert → kein doppelter `<title>`-Tag
+2. **Twig Container** (`Ceres::Template.Style`): Gibt `og:description` aus
 
 ## Installation
 
-1. Plugin via GitHub-Repo in ein **Plugin-Set** importieren.
-2. In plentymarkets unter **Plugins → Plugin-Set → OSVCustomMeta** aktivieren.
-3. Das Plugin wird automatisch in den Container `Ceres::PageDesign.AfterOpeningHeadTag` verlinkt (via `defaultLayoutContainer`).
-4. **Plugin-Set bereitstellen** (Deploy).
-5. **Cache leeren**.
+1. Plugin via GitHub in Plugin-Set importieren
+2. Aktivieren + bereitstellen
+3. Container `Ceres::Template.Style` → `OSV OG Description` aktivieren
 
-### Manuelle Container-Verknüpfung (falls nötig)
+## Eigenschafts-Konfiguration
 
-Falls die automatische Verknüpfung nicht greift:
-1. **Plugins → Plugin-Set → Container-Verknüpfungen**
-2. Container: **PageDesign.AfterOpeningHeadTag**
-3. Data Provider: **OSV Custom Meta (Head)** aktivieren
-4. Speichern und bereitstellen.
+| Einstellung | Wert |
+|---|---|
+| Bereich | Artikel |
+| Typ | Text |
+| Herkunft | Mandant (Shop) |
+| Mandant | Alles ausgewaehlt |
+| Anzeige | Im Shopbuilder fuer die Artikelseite bereitstellen |
 
-## Test
-
-- Artikelseite öffnen → **Strg+U** (Seitenquelltext)
-- `<title>` und `<meta name="description">` müssen im HTML-Head stehen.
-
-## Property-IDs anpassen
-
-Die IDs der Eigenschaften sind in `resources/views/Containers/OsvSeoMeta.twig` definiert:
-```twig
-{% set PROP_TITLE_ID = 286 %}
-{% set PROP_DESC_ID  = 287 %}
-```
-
-## Kompatibilität
+## Kompatibilitaet
 
 - Ceres >= 5.0.0
 - IO >= 5.0.0
