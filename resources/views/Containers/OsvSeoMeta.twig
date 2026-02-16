@@ -1,34 +1,16 @@
-{# ========== OSV CUSTOM META (SSR) v1.5.1 ========== #}
 <!-- OSV-META-START -->
-{% set PROP_TITLE_ID = 288 %}
-{% set PROP_DESC_ID  = 289 %}
-{% set shopName = 'Seiffener Volkskunst' %}
-
-{% macro clean(txt) %}
-  {{- (txt|string)
-      | striptags
-      | trim
-      | replace({'\n':' ','\r':' '})
-      | replace({'  ':' '})
-  -}}
-{% endmacro %}
-
-{% import _self as H %}
-{% set title = shopName %}
-{% set desc  = '' %}
+{% set titleProp = '' %}
+{% set descProp = '' %}
 
 {% if item is defined and item.documents is defined and item.documents|length > 0 %}
   {% set d = item.documents[0].data %}
 
-  {# Suche Properties in variationProperties (gruppierte Struktur) #}
-  {% set titleProp = '' %}
-  {% set descProp  = '' %}
   {% for group in d.variationProperties|default([]) %}
     {% for prop in group.properties|default([]) %}
-      {% if prop.id == PROP_TITLE_ID and titleProp == '' %}
+      {% if prop.id == 288 and titleProp == '' %}
         {% set titleProp = prop.values.value|default('') %}
       {% endif %}
-      {% if prop.id == PROP_DESC_ID and descProp == '' %}
+      {% if prop.id == 289 and descProp == '' %}
         {% set descProp = prop.values.value|default('') %}
       {% endif %}
     {% endfor %}
@@ -37,18 +19,31 @@
   {% set name1 = d.texts.name1|default('') %}
   {% set brand = d.manufacturer.name|default('') %}
 
-  {% set metaDesc = descProp ? descProp : d.texts.metaDescription|default('') %}
-  {% if not metaDesc %}
-    {% set metaDesc = d.texts.shortDescription|default('') %}
+  {% if titleProp %}
+    {% set metaTitle = titleProp|striptags|trim %}
+  {% else %}
+    {% set metaTitle = name1|striptags|trim %}
   {% endif %}
 
-  {% set title = (titleProp ? H.clean(titleProp) : H.clean(name1)) ~ (brand ? ' | ' ~ H.clean(brand) : '') ~ ' | ' ~ shopName %}
-  {% set desc  = H.clean(metaDesc)|slice(0,160) %}
+  {% if brand %}
+    {% set metaTitle = metaTitle ~ ' | ' ~ brand|striptags|trim %}
+  {% endif %}
 
+  {% set metaTitle = metaTitle ~ ' | Seiffener Volkskunst' %}
+
+  {% if descProp %}
+    {% set metaDesc = descProp|striptags|trim %}
+  {% else %}
+    {% set metaDesc = d.texts.metaDescription|default('')|striptags|trim %}
+  {% endif %}
+
+  {% if not metaDesc %}
+    {% set metaDesc = d.texts.shortDescription|default('')|striptags|trim %}
+  {% endif %}
+
+<title>{{ metaTitle }}</title>
+<meta name="description" content="{{ metaDesc|slice(0,160) }}">
+<meta property="og:title" content="{{ metaTitle }}">
+<meta property="og:description" content="{{ metaDesc|slice(0,160) }}">
 {% endif %}
-
-<title>{{ title }}</title>
-<meta name="description" content="{{ desc }}">
-<meta property="og:title" content="{{ title }}">
-<meta property="og:description" content="{{ desc }}">
 <!-- OSV-META-END -->
