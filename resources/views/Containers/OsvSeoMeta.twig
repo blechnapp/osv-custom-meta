@@ -1,90 +1,32 @@
-{# ========== OSV CUSTOM META (SSR) v1.4.0 ========== #}
+{# ========== OSV CUSTOM META (SSR) v1.4.0 DEBUG ========== #}
+<!-- OSV-DEBUG: Template wird gerendert -->
+
 {% set PROP_TITLE_ID = 288 %}
 {% set PROP_DESC_ID  = 289 %}
 
-{% macro clean(txt) %}
-  {{- (txt|string)
-      | striptags
-      | trim
-      | replace({'\n':' ','\r':' '})
-      | replace({'  ':' '})
-  -}}
-{% endmacro %}
+<!-- OSV-DEBUG: isItem={{ services.template.isCurrentTemplate('tpl.item') ? 'JA' : 'NEIN' }} -->
+<!-- OSV-DEBUG: itemDefined={{ item is defined ? 'JA' : 'NEIN' }} -->
 
-{% macro propVal(list, pid) %}
-  {% set out = '' %}
-  {% for p in list|default([]) if out == '' %}
-    {% set _pid = p.property.id ?? p.id ?? null %}
-    {% if _pid == pid %}
-      {% set v = p.values[0].value
-                ?? p.values[0].texts.value
-                ?? p.texts.value
-                ?? p.value
-                ?? '' %}
-      {% if v is iterable %}{% set v = v|join(' ') %}{% endif %}
-      {% set out = v %}
+{% if item is defined %}
+  <!-- OSV-DEBUG: docsCount={{ item.documents|length }} -->
+  {% if item.documents|length > 0 %}
+    {% set d = item.documents[0].data %}
+    <!-- OSV-DEBUG: dataKeys={{ d|keys|join(', ') }} -->
+    <!-- OSV-DEBUG: hasProperties={{ d.properties is defined ? 'JA' : 'NEIN' }} -->
+    <!-- OSV-DEBUG: hasVariationProperties={{ d.variationProperties is defined ? 'JA' : 'NEIN' }} -->
+    {% if d.properties is defined %}
+      <!-- OSV-DEBUG: propertiesCount={{ d.properties|length }} -->
+      {% for p in d.properties %}
+        <!-- OSV-DEBUG: prop id={{ p.property.id ?? p.id ?? 'UNKNOWN' }} -->
+      {% endfor %}
     {% endif %}
-  {% endfor %}
-  {{- out -}}
-{% endmacro %}
-
-{% import _self as H %}
-{% set shopName = ceresConfig.header.companyName ?: 'Shop' %}
-{% set title = shopName %}
-{% set desc  = '' %}
-
-{% if services.template.isCurrentTemplate('tpl.item') and item is defined and item.documents|length > 0 %}
-  {% set d = item.documents[0].data %}
-
-  {# === Versuche verschiedene Pfade für Properties === #}
-  {% set titleProp = H.propVal(d.variationProperties ?? [], PROP_TITLE_ID) %}
-  {% if not titleProp %}
-    {% set titleProp = H.propVal(d.properties ?? [], PROP_TITLE_ID) %}
+    {% if d.variationProperties is defined %}
+      <!-- OSV-DEBUG: variationPropertiesCount={{ d.variationProperties|length }} -->
+      {% for p in d.variationProperties %}
+        <!-- OSV-DEBUG: varProp id={{ p.property.id ?? p.id ?? 'UNKNOWN' }} -->
+      {% endfor %}
+    {% endif %}
   {% endif %}
-  {% if not titleProp and d.item and d.item.properties is defined %}
-    {% set titleProp = H.propVal(d.item.properties, PROP_TITLE_ID) %}
-  {% endif %}
-  {% if not titleProp and d.baseProperties is defined %}
-    {% set titleProp = H.propVal(d.baseProperties, PROP_TITLE_ID) %}
-  {% endif %}
-  {% if not titleProp and d.variationPropertiesWithoutGroup is defined %}
-    {% set titleProp = H.propVal(d.variationPropertiesWithoutGroup, PROP_TITLE_ID) %}
-  {% endif %}
-
-  {% set descProp = H.propVal(d.variationProperties ?? [], PROP_DESC_ID) %}
-  {% if not descProp %}
-    {% set descProp = H.propVal(d.properties ?? [], PROP_DESC_ID) %}
-  {% endif %}
-  {% if not descProp and d.item and d.item.properties is defined %}
-    {% set descProp = H.propVal(d.item.properties, PROP_DESC_ID) %}
-  {% endif %}
-  {% if not descProp and d.baseProperties is defined %}
-    {% set descProp = H.propVal(d.baseProperties, PROP_DESC_ID) %}
-  {% endif %}
-  {% if not descProp and d.variationPropertiesWithoutGroup is defined %}
-    {% set descProp = H.propVal(d.variationPropertiesWithoutGroup, PROP_DESC_ID) %}
-  {% endif %}
-
-  {% set name1    = d.texts.name1 ?? d.texts.name2 ?? d.texts.name3 ?? '' %}
-  {% set brand    = d.manufacturer.name ?? '' %}
-  {% set metaDesc = descProp ?: (d.texts.metaDescription ?? '') %}
-  {% if not metaDesc %}
-    {% set short = d.texts.shortDescription ?? '' %}
-    {% set metaDesc = short ? H.clean(short) : '' %}
-  {% endif %}
-
-  {% set title = (titleProp ? H.clean(titleProp) : H.clean(name1)) ~ (brand ? ' | ' ~ H.clean(brand) : '') ~ ' | ' ~ shopName %}
-  {% set desc  = H.clean(metaDesc)|slice(0,160) %}
-
-{% else %}
-  {% set title = shopName %}
-  {% set desc = 'Jetzt ' ~ shopName ~ ' besuchen – handgefertigte Kunst & Figuren.' %}
 {% endif %}
 
-<title>{{ title }}</title>
-<meta name="description" content="{{ desc }}">
-<meta property="og:title" content="{{ title }}">
-<meta property="og:description" content="{{ desc }}">
-{% if services.routing.getCanonicalUrl() %}
-  <link rel="canonical" href="{{ services.routing.getCanonicalUrl() }}">
-{% endif %}
+<!-- OSV-DEBUG-END -->
