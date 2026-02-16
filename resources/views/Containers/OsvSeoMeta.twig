@@ -1,6 +1,6 @@
-{# ========== OSV CUSTOM META (SSR) | OVK Debug-Version ========== #}
-{% set PROP_TITLE_ID = 286 %}
-{% set PROP_DESC_ID  = 287 %}
+{# ========== OSV CUSTOM META (SSR) v1.4.0 ========== #}
+{% set PROP_TITLE_ID = 288 %}
+{% set PROP_DESC_ID  = 289 %}
 
 {% macro clean(txt) %}
   {{- (txt|string)
@@ -36,11 +36,7 @@
 {% if services.template.isCurrentTemplate('tpl.item') and item is defined and item.documents|length > 0 %}
   {% set d = item.documents[0].data %}
 
-  {# --- Debug-Ausgabe in Kommentar --- #}
-  <!-- OSV Debug: Felder im Item -->
-  <!-- Keys: {{ d|keys|join(', ') }} -->
-
-  {# === Versuche verschiedene Pfade === #}
+  {# === Versuche verschiedene Pfade für Properties === #}
   {% set titleProp = H.propVal(d.variationProperties ?? [], PROP_TITLE_ID) %}
   {% if not titleProp %}
     {% set titleProp = H.propVal(d.properties ?? [], PROP_TITLE_ID) %}
