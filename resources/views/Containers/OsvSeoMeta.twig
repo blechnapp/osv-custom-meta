@@ -1,32 +1,41 @@
-{# ========== OSV CUSTOM META (SSR) v1.4.0 DEBUG ========== #}
+{# ========== OSV CUSTOM META (SSR) v1.4.2 DEBUG ========== #}
 <!-- OSV-DEBUG: Template wird gerendert -->
 
-{% set PROP_TITLE_ID = 288 %}
-{% set PROP_DESC_ID  = 289 %}
+{% if item is defined and item.documents|length > 0 %}
+  {% set d = item.documents[0].data %}
 
-<!-- OSV-DEBUG: isItem={{ services.template.isCurrentTemplate('tpl.item') ? 'JA' : 'NEIN' }} -->
-<!-- OSV-DEBUG: itemDefined={{ item is defined ? 'JA' : 'NEIN' }} -->
+  <!-- OSV-DEBUG: item-keys={{ d.item|keys|join(', ') }} -->
 
-{% if item is defined %}
-  <!-- OSV-DEBUG: docsCount={{ item.documents|length }} -->
-  {% if item.documents|length > 0 %}
-    {% set d = item.documents[0].data %}
-    <!-- OSV-DEBUG: dataKeys={{ d|keys|join(', ') }} -->
-    <!-- OSV-DEBUG: hasProperties={{ d.properties is defined ? 'JA' : 'NEIN' }} -->
-    <!-- OSV-DEBUG: hasVariationProperties={{ d.variationProperties is defined ? 'JA' : 'NEIN' }} -->
-    {% if d.properties is defined %}
-      <!-- OSV-DEBUG: propertiesCount={{ d.properties|length }} -->
-      {% for p in d.properties %}
-        <!-- OSV-DEBUG: prop id={{ p.property.id ?? p.id ?? 'UNKNOWN' }} -->
-      {% endfor %}
-    {% endif %}
-    {% if d.variationProperties is defined %}
-      <!-- OSV-DEBUG: variationPropertiesCount={{ d.variationProperties|length }} -->
-      {% for p in d.variationProperties %}
-        <!-- OSV-DEBUG: varProp id={{ p.property.id ?? p.id ?? 'UNKNOWN' }} -->
-      {% endfor %}
-    {% endif %}
+  {% if d.item.properties is defined %}
+    <!-- OSV-DEBUG: item.propertiesCount={{ d.item.properties|length }} -->
+    {% for p in d.item.properties %}
+      <!-- OSV-DEBUG: item.prop={{ p|json_encode }} -->
+    {% endfor %}
+  {% else %}
+    <!-- OSV-DEBUG: item.properties=NICHT VORHANDEN -->
   {% endif %}
+
+  <!-- OSV-DEBUG: variationProperties IDs: -->
+  {% for p in d.variationProperties|default([]) %}
+    <!-- OSV-DEBUG: varProp full={{ p|json_encode }} -->
+  {% endfor %}
+
+  <!-- OSV-DEBUG: properties IDs: -->
+  {% for p in d.properties|default([]) %}
+    <!-- OSV-DEBUG: prop full={{ p|json_encode }} -->
+  {% endfor %}
+
+  {% if d.characteristics is defined %}
+    <!-- OSV-DEBUG: characteristicsCount={{ d.characteristics|length }} -->
+    {% for c in d.characteristics %}
+      <!-- OSV-DEBUG: characteristic={{ c|json_encode }} -->
+    {% endfor %}
+  {% else %}
+    <!-- OSV-DEBUG: characteristics=NICHT VORHANDEN -->
+  {% endif %}
+
+{% else %}
+  <!-- OSV-DEBUG: kein Item -->
 {% endif %}
 
 <!-- OSV-DEBUG-END -->
