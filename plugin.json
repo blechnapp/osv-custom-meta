@@ -2,23 +2,15 @@
   "name": "OSVCustomMeta",
   "type": "template",
   "namespace": "OSVCustomMeta",
-  "version": "1.5.3",
+  "version": "2.0.0",
   "license": "proprietary",
   "pluginType": "template",
   "author": "OSV",
-  "shortDescription": "Serverseitige (SSR) Meta-Title & Meta-Description für Ceres.",
+  "shortDescription": "Serverseitige Meta-Title & Meta-Description aus Eigenschaften für Ceres.",
   "categories": ["template"],
   "dependencies": {
     "Ceres": ">=5.0.0",
     "IO": ">=5.0.0"
   },
-  "serviceProvider": "OSVCustomMeta\\Providers\\OSVServiceProvider",
-  "dataProviders": [
-    {
-      "key": "OSVCustomMeta\\Containers\\MetaHeadContainer",
-      "name": "OSV Custom Meta (Head)",
-      "description": "Gibt serverseitig <title> & <meta name=\"description\"> im <head> aus.",
-      "defaultLayoutContainer": "Ceres::Template.Style"
-    }
-  ]
+  "serviceProvider": "OSVCustomMeta\\Providers\\OSVServiceProvider"
 }
