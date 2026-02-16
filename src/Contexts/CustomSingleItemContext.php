@@ -22,11 +22,11 @@ class CustomSingleItemContext extends SingleItemContext implements ContextInterf
         $customDesc  = trim($this->getPropertyValueById($variationProperties, self::PROP_DESC_ID));
 
         if (!empty($customTitle)) {
-            $this->item['documents'][0]['data']['texts']['title'] = $customTitle . ' | ' . self::SHOP_NAME;
+            $this->item['documents'][0]['data']['texts']['title'] = html_entity_decode($customTitle, ENT_QUOTES, 'UTF-8') . ' | ' . self::SHOP_NAME;
         }
 
         if (!empty($customDesc)) {
-            $this->item['documents'][0]['data']['texts']['metaDescription'] = $customDesc;
+            $this->item['documents'][0]['data']['texts']['metaDescription'] = html_entity_decode($customDesc, ENT_QUOTES, 'UTF-8');
         }
     }
 
