@@ -9,6 +9,7 @@ class CustomSingleItemContext extends SingleItemContext implements ContextInterf
 {
     const PROP_TITLE_ID = 288;
     const PROP_DESC_ID  = 289;
+    const SHOP_NAME     = 'Seiffener Volkskunst';
 
     public function init($params)
     {
@@ -17,11 +18,11 @@ class CustomSingleItemContext extends SingleItemContext implements ContextInterf
         $itemData = $this->item['documents'][0]['data'] ?? [];
         $variationProperties = $itemData['variationProperties'] ?? [];
 
-        $customTitle = $this->getPropertyValueById($variationProperties, self::PROP_TITLE_ID);
-        $customDesc  = $this->getPropertyValueById($variationProperties, self::PROP_DESC_ID);
+        $customTitle = trim($this->getPropertyValueById($variationProperties, self::PROP_TITLE_ID));
+        $customDesc  = trim($this->getPropertyValueById($variationProperties, self::PROP_DESC_ID));
 
         if (!empty($customTitle)) {
-            $this->item['documents'][0]['data']['texts']['title'] = $customTitle;
+            $this->item['documents'][0]['data']['texts']['title'] = $customTitle . ' | ' . self::SHOP_NAME;
         }
 
         if (!empty($customDesc)) {
