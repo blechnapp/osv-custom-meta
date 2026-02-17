@@ -21,7 +21,7 @@ class OSVServiceProvider extends ServiceProvider
                 $templateContainer->setContext(CustomSingleItemContext::class);
                 return false;
             },
-            -1
+            0
         );
     }
 }
