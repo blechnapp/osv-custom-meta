@@ -1,4 +1,18 @@
+<!-- OSV-DEBUG-START -->
+<!-- item defined: {{ item is defined ? 'YES' : 'NO' }} -->
 {% if item is defined and item.documents is defined and item.documents|length > 0 %}
+{% set title = item.documents[0].data.texts.title|default('LEER') %}
 {% set desc = item.documents[0].data.texts.metaDescription|default('') %}
+{% set varProps = item.documents[0].data.variationProperties|default([]) %}
+<!-- texts.title: {{ title }} -->
+<!-- texts.metaDescription: {{ desc|default('LEER') }} -->
+<!-- variationProperties count: {{ varProps|length }} -->
+{% for group in varProps %}
+<!-- propGroup id={{ group.id|default('?') }} name={{ group.name|default('?') }} -->
+{% for prop in group.properties|default([]) %}
+<!-- prop id={{ prop.id|default('?') }} value={{ prop.values.value|default('?') }} -->
+{% endfor %}
+{% endfor %}
 {% if desc %}<meta property="og:description" content="{{ desc|striptags|trim|slice(0,160) }}">{% endif %}
 {% endif %}
+<!-- OSV-DEBUG-END -->
