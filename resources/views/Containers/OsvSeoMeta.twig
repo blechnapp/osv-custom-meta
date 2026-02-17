@@ -7,7 +7,8 @@
 {% if prop.id == 289 and prop.values.value|default('') != '' %}{% set customDesc = prop.values.value|striptags|trim %}{% endif %}
 {% endfor %}
 {% endfor %}
+{% if customTitle %}{% set fullTitle = customTitle|slice(0,60) ~ ' | Seiffener Volkskunst' %}<meta property="og:title" content="{{ fullTitle }}">{% endif %}
 {% if customDesc %}<meta name="description" content="{{ customDesc|slice(0,160) }}">
 <meta property="og:description" content="{{ customDesc|slice(0,160) }}">{% endif %}
-{% if customTitle %}<script>document.addEventListener('DOMContentLoaded',function(){var t="{{ customTitle|slice(0,60) }} | Seiffener Volkskunst";document.title=t;var og=document.querySelector('meta[property="og:title"]');if(og)og.setAttribute('content',t);});</script>{% endif %}
+{% if customTitle %}<script>document.addEventListener('DOMContentLoaded',function(){document.title="{{ fullTitle }}";var d=document.querySelectorAll('meta[property="og:title"]');if(d.length>1)d[d.length-1].remove();});</script>{% endif %}
 {% endif %}
