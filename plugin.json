@@ -2,13 +2,15 @@
   "name": "OSVCustomMeta",
   "type": "template",
   "namespace": "OSVCustomMeta",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "license": "proprietary",
   "pluginType": "template",
   "author": "OSV",
   "shortDescription": "Serverseitige Meta-Title & Meta-Description aus Eigenschaften für Ceres.",
-  "categories": ["template"],
-  "dependencies": {
+  "categories": [
+    "template"
+  ],
+  "require": {
     "Ceres": ">=5.0.0",
     "IO": ">=5.0.0"
   },
