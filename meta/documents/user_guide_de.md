@@ -10,6 +10,7 @@ Das Plugin liest zwei Artikel-Eigenschaften aus und verwendet deren Werte als:
 
 - **Eigenschaft 288** (Meta Title) &rarr; `<title>` und `og:title`
 - **Eigenschaft 289** (Meta Description) &rarr; `<meta name="description">` und `og:description`
+- **Bild der Variante** &rarr; `og:image` (Vorschaubild beim Teilen eines Links, z. B. Facebook, WhatsApp). Verwendet wird das erste Bild, das der Variante zugeordnet ist (Reihenfolge nach Position). Hat die Variante kein eigenes Bild, greift das Ceres-Standardbild.
 
 Wenn eine Eigenschaft nicht befüllt ist, greift das Standard-Verhalten von Ceres (Artikelname / Standard-Beschreibung).
 
@@ -86,6 +87,8 @@ Kleines Template das `og:description` im `<head>` ausgibt, da Ceres dieses Tag n
 | Eigenschaft befuellt | Custom Title &#124; Seiffener Volkskunst | Custom Description |
 | Eigenschaft leer | Ceres Standard (Artikelname) | Ceres Standard (metaDescription) |
 | Kein Artikel (z.B. Startseite) | Ceres Standard | Ceres Standard |
+
+**Vorschaubild (`og:image`):** Variante hat eigene Bilder &rarr; erstes Bild der Variante. Variante ohne eigenes Bild &rarr; Ceres Standard (erstes Bild des Artikels). Das Plugin-Bild steht im `<head>` vor dem Ceres-Bild.
 
 ## Kompatibilitaet
 
