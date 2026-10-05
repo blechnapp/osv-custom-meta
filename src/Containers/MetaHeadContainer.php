@@ -2,13 +2,13 @@
 
 namespace OSVCustomMeta\Containers;
 
-use Plenty\Plugin\Templates\Twig;
-
 class MetaHeadContainer
 {
-    public function call(Twig $twig): string
+    public function call(): string
     {
-        // Rendert unser Twig ins <head>-Element
-        return $twig->render('OSVCustomMeta::Containers.OsvSeoMeta');
+        // Seit v3.2.0 ersetzt das Plugin das Ceres-Teilstueck 'page-metadata'
+        // (siehe OSVServiceProvider). Der Container bleibt nur registriert,
+        // damit die bestehende Container-Verknuepfung nicht ins Leere zeigt.
+        return '';
     }
 }

@@ -2,7 +2,7 @@
 
 ## Beschreibung
 
-Das Plugin **OSV Custom Meta** ermöglicht es, individuelle Meta-Titel und Meta-Descriptions pro Artikel im plentyShop (Ceres) zu vergeben. Die Werte werden serverseitig (SSR) gesetzt und sind damit vollständig SEO-konform.
+Das Plugin **OSV Custom Meta** ermöglicht es, individuelle Meta-Titel, Meta-Descriptions und Vorschaubilder pro Variante im plentyShop (Ceres) zu vergeben. Die Werte werden serverseitig (SSR) gesetzt und sind damit vollständig SEO-konform.
 
 ## Funktionsweise
 
@@ -68,17 +68,18 @@ Folgende Zeichen duerfen **nicht** in den Eigenschaftswerten verwendet werden:
 
 ## Technische Details
 
-Das Plugin besteht aus zwei Komponenten:
+Seit Version 3.2.0 ersetzt das Plugin das Ceres-Teilstück `page-metadata` (Ereignis `IO.init.templates`,
+Priorität 0, also nach Ceres). Die eigene Vorlage `PageDesign/Partials/PageMetadata.twig` ist eine Kopie der
+Ceres-Vorlage (Ceres 5.0.83 bis 5.0.85). Nur auf Artikelseiten werden Titel, Beschreibung und Bild durch die Werte
+der Variante ersetzt. Dadurch steht jede Angabe genau einmal und schon im ausgelieferten HTML im `<head>`:
+`<title>`, `description`, `og:title`, `og:image`. Es wird kein Skript mehr benötigt.
 
-### 1. CustomSingleItemContext (PHP)
+Bis Version 3.1.0 hat das Plugin eigene Tags vor die Ceres-Tags gesetzt. Die Ceres-Tags blieben dahinter stehen,
+und je nach Dienst wurde der erste oder der letzte Eintrag verwendet (WhatsApp der erste, Teams der letzte).
 
-Ueberschreibt den Ceres SingleItemContext fuer Artikelseiten. Liest die Eigenschaften 288/289 aus den `variationProperties` und setzt `texts.title` sowie `texts.metaDescription` bevor Ceres die Seite rendert.
+Der Container **OSV OG Description** (`Ceres::Template.Style`) bleibt registriert, gibt aber nichts mehr aus.
 
-**Vorteil:** Kein doppelter `<title>`-Tag, keine JavaScript-Manipulation.
-
-### 2. OG Description Container (Twig)
-
-Kleines Template das `og:description` im `<head>` ausgibt, da Ceres dieses Tag nicht automatisch setzt.
+**Wichtig bei Ceres-Updates:** Ändert Ceres seine Vorlage `PageMetadata.twig`, muss die Kopie im Plugin angeglichen werden.
 
 ## Fallback-Verhalten
 
@@ -88,7 +89,7 @@ Kleines Template das `og:description` im `<head>` ausgibt, da Ceres dieses Tag n
 | Eigenschaft leer | Ceres Standard (Artikelname) | Ceres Standard (metaDescription) |
 | Kein Artikel (z.B. Startseite) | Ceres Standard | Ceres Standard |
 
-**Vorschaubild (`og:image`):** Variante hat eigene Bilder &rarr; erstes Bild der Variante. Variante ohne eigenes Bild &rarr; Ceres Standard (erstes Bild des Artikels). Das Plugin-Bild steht im `<head>` vor dem Ceres-Bild.
+**Vorschaubild (`og:image`):** Variante hat eigene Bilder &rarr; erstes Bild der Variante. Variante ohne eigenes Bild &rarr; Ceres Standard (erstes Bild des Artikels). Es gibt nur ein `og:image`.
 
 ## Kompatibilitaet
 

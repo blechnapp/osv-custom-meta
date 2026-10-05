@@ -1,0 +1,116 @@
+{% set details = null %}
+{% if category is defined and category is not null %}
+    {% set details = category.details[0] %}
+{% endif %}
+
+{% set robots = '' %}
+{% set description = '' %}
+{% set keywords = '' %}
+{% set image = '' %}
+{% set title = '' %}
+
+{% if block('robots') is defined %}
+    {% set robots = block('robots') | default('NOINDEX, NOFOLLOW') %}
+{% elseif details is not null %}
+    {% set robots = services.SEO.getRobotsInformation() %}
+{% endif %}
+
+{% if block('description') is defined %}
+    {% set description = block('description') %}
+{% elseif details is not null %}
+    {% set description = details.metaDescription %}
+{% endif %}
+
+{% if block('keywords') is defined %}
+    {% set keywords = block('keywords') %}
+{% elseif details is not null %}
+    {% set keywords = details.metaKeywords %}
+{% endif %}
+
+{% set companyLogo = ceresConfig.header.companyLogo %}
+{% if block('image') is defined %}
+    {% set image = block('image') | default(companyLogo) %}
+{% elseif details is not null %}
+    {% set image = details.imagePath | default(companyLogo) %}
+{% endif %}
+
+{% if block('title') is defined %}
+    {% set title = block('title') %}
+{% elseif details is not null %}
+    {% set title = details.metaTitle | default(details.name) %}
+{% endif %}
+
+{# OSVCustomMeta: Auf Artikelseiten Titel, Beschreibung und Bild der Variante statt des Artikels.
+   Eigenschaft 288 = Meta-Titel, 289 = Meta-Beschreibung, Bild = erstes Bild der Variante.
+   Leere Werte lassen den Ceres-Standard stehen. Sonst identisch mit Ceres 5.0.83-5.0.85. #}
+{% set osvTitleSet = false %}
+{% if itemData is defined and itemData is not null %}
+    {% set osvTitle = '' %}
+    {% set osvDesc = '' %}
+    {% for group in itemData.variationProperties|default([]) %}
+        {% for prop in group.properties|default([]) %}
+            {% if prop.id == 288 and prop.values.value|default('') != '' %}{% set osvTitle = prop.values.value|striptags|trim %}{% endif %}
+            {% if prop.id == 289 and prop.values.value|default('') != '' %}{% set osvDesc = prop.values.value|striptags|trim %}{% endif %}
+        {% endfor %}
+    {% endfor %}
+    {% if osvTitle %}
+        {% set title = (osvTitle|slice(0,60) ~ ' | Seiffener Volkskunst')|e %}
+        {% set osvTitleSet = true %}
+    {% endif %}
+    {% if osvDesc %}
+        {% set description = osvDesc|slice(0,160) %}
+    {% endif %}
+    {% if itemData.images is defined and itemData.images.variation is defined and itemData.images.variation|length > 0 and itemData.images.variation[0].url|default('') != '' %}
+        {% set image = itemData.images.variation[0].url %}
+    {% endif %}
+{% endif %}
+
+{% set type             = block('type') | default('article') %}
+{% set url              = block('url') | default(services.url.getCanonicalURL()) | default(webstoreConfig.domainSsl) %}
+
+{% if not osvTitleSet and (removeTitleCompanyName is not defined or not removeTitleCompanyName) %}
+    {% if title | trim is not empty %}
+        {% set title = title ~ " | " %}
+    {% endif %}
+    {% set title = title ~ trans("Ceres::Template.headerCompanyName") %}
+{% endif %}
+
+{% if image starts with 'category/' %}
+    {% set image = "/documents/" ~ image %}
+{% endif %}
+
+{% if not (image starts with 'https://' or image starts with 'http://' or image starts with 'layout/'or image starts with '/documents/') %}
+    {% set image = plugin_path('Ceres') ~ "/" ~ image %}
+{% endif %}
+
+<meta name="robots" content="{% if forceNoIndex %}NOINDEX{% else %}{{ robots }}{% endif %}">
+{% if description | trim is not empty %}
+    <meta name="description" content="{{ description | trim }}">
+{% endif %}
+{% if keywords | trim is not empty %}
+    <meta name="keywords" content="{{ keywords | trim }}">
+{% endif %}
+<meta property="og:title" content="{{ title | trim | raw }}"/>
+<meta property="og:type" content="article"/>
+<meta property="og:url" content="{{ url | trim }}"/>
+<meta property="og:image" content="{{ image | trim }}"/>
+<meta property="thumbnail" content="{{ image | trim }}"/>
+
+<script type="application/ld+json">
+{% block schemaOrg %}
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "url": "{{ url | raw }}"
+    {% if services.template.isHome() %}
+    ,"potentialAction":{
+        "@type": "SearchAction",
+        "target": "{{ webstoreConfig.domainSsl ~ urls.search }}?query={search_term}",
+        "query-input": "required name=search_term"
+    }
+    {% endif %}
+}
+{% endblock %}
+</script>
+
+<title>{{ title | trim | raw }}</title>

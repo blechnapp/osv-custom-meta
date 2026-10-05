@@ -2,10 +2,9 @@
 
 namespace OSVCustomMeta\Providers;
 
-use IO\Helper\TemplateContainer;
+use IO\Extensions\Functions\Partial;
 use Plenty\Plugin\Events\Dispatcher;
 use Plenty\Plugin\ServiceProvider;
-use OSVCustomMeta\Contexts\CustomSingleItemContext;
 
 class OSVServiceProvider extends ServiceProvider
 {
@@ -15,13 +14,12 @@ class OSVServiceProvider extends ServiceProvider
 
     public function boot(Dispatcher $eventDispatcher)
     {
-        $eventDispatcher->listen(
-            'IO.ctx.item',
-            function (TemplateContainer $templateContainer, $templateData = []) {
-                $templateContainer->setContext(CustomSingleItemContext::class);
-                return false;
-            },
-            0
-        );
+        // Ceres setzt 'page-metadata' mit Prioritaet 100. Wir laufen danach (0)
+        // und ersetzen das Teilstueck durch unsere Fassung mit den Variantenwerten.
+        $setPartial = function (Partial $partial) {
+            $partial->set('page-metadata', 'OSVCustomMeta::PageDesign.Partials.PageMetadata');
+        };
+        $eventDispatcher->listen('IO.init.templates', $setPartial, 0);
+        $eventDispatcher->listen('IO.intl.init.templates', $setPartial, 0);
     }
 }
