@@ -96,9 +96,7 @@
 <meta property="og:image" content="{{ image | trim }}"/>
 <meta property="thumbnail" content="{{ image | trim }}"/>
 
-{# OSVCustomMeta: Bewertungen aus dem Feedback-Plugin als aggregateRating in das Produkt-Objekt.
-   Nur auf Artikelseiten und nur bei mindestens einer echten Bewertung, sonst unveraendert wie Ceres. #}
-{% set osvSchema %}
+<script type="application/ld+json">
 {% block schemaOrg %}
 {
     "@context": "http://schema.org",
@@ -113,24 +111,6 @@
     {% endif %}
 }
 {% endblock %}
-{% endset %}
-{% set osvRatingTotal = 0 %}
-{% set osvRatingAvg = 0 %}
-{% if itemData is defined and itemData is not null and feedbackServices is defined and feedbackServices is not null %}
-    {% set osvCounts = feedbackServices.feedback.getCounts(itemData.item.id) %}
-    {% set osvRatingTotal = osvCounts.counts.ratingsCountTotal|default(0) %}
-    {% set osvRatingAvg = osvCounts.counts.averageValue|default(0) %}
-{% endif %}
-<script type="application/ld+json">
-{% if osvRatingTotal > 0 and osvRatingAvg > 0 and osvSchema|trim|last == '}' %}{{ osvSchema|trim|slice(0,-1)|raw }},
-                "aggregateRating": {
-                    "@type"         : "AggregateRating",
-                    "ratingValue"   : "{{ osvRatingAvg|number_format(2, '.', '') }}",
-                    "ratingCount"   : "{{ osvRatingTotal }}",
-                    "bestRating"    : "5",
-                    "worstRating"   : "1"
-                }
-}{% else %}{{ osvSchema|raw }}{% endif %}
 </script>
 
 <title>{{ title | trim | raw }}</title>

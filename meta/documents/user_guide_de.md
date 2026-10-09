@@ -79,11 +79,6 @@ und je nach Dienst wurde der erste oder der letzte Eintrag verwendet (WhatsApp d
 
 Der Container **OSV OG Description** (`Ceres::Template.Style`) bleibt registriert, gibt aber nichts mehr aus.
 
-Seit Version 3.3.0 ergänzt das Plugin auf Artikelseiten das Produkt-Objekt der Strukturdaten (JSON-LD) um
-`aggregateRating` (Durchschnitt, Anzahl, bestRating 5, worstRating 1). Die Werte kommen aus dem Feedback-Plugin
-(`feedbackServices.feedback.getCounts(Artikel-ID)`). Ohne Bewertung oder ohne Feedback-Plugin bleibt das Objekt wie bei Ceres.
-Hintergrund: Das Feedback-Plugin erzeugt seine Bewertungsdaten nur per Skript im Browser als zweites Product-Objekt.
-
 **Wichtig bei Ceres-Updates:** Ändert Ceres seine Vorlage `PageMetadata.twig`, muss die Kopie im Plugin angeglichen werden.
 
 ## Fallback-Verhalten

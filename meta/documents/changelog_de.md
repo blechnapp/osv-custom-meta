@@ -2,9 +2,9 @@
 
 Neueste Version oben. Jede Version ist ein Git-Tag; im Plugin-Set wird der Tag gewählt.
 
-## 3.3.0 (05.10.2026)
+## 3.3.0 (05.10.2026) – zurückgezogen, nie installieren
 
-- Bewertungen (aggregateRating) aus dem Feedback-Plugin in die strukturierten Produktdaten (JSON-LD)
+- Gab Bewertungen (aggregateRating) zusätzlich selbst aus. Das Feedback-Plugin liefert sie schon; Google meldete dadurch „mehrere zusammengefasste Bewertungen“ (doppelte Sternebewertung). Tag am 09.10.2026 gelöscht, Code zurückgenommen. Aktuell gültig: 3.2.0.
 
 ## 3.2.0 (05.10.2026)
 
