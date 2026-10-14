@@ -31,7 +31,8 @@
 {% if block('image') is defined %}
     {% set image = block('image') | default(companyLogo) %}
 {% elseif details is not null %}
-    {% set image = details.imagePath | default(companyLogo) %}
+    {# OSVCustomMeta 3.2.1: Bild 2 (Kachel) als Rueckfall vor dem Firmenlogo #}
+    {% set image = details.imagePath | default(details.image2Path) | default(companyLogo) %}
 {% endif %}
 
 {% if block('title') is defined %}
@@ -75,11 +76,25 @@
     {% set title = title ~ trans("Ceres::Template.headerCompanyName") %}
 {% endif %}
 
+{# OSVCustomMeta 3.2.1: Vorschaubild auf Kategorie- und Inhaltsseiten.
+   Reihenfolge: Bild 1 (Vorschau) -> Bild 2 (Kachel) -> festes Teilen-Bild aus diesem Plugin.
+   Ausgabe immer als vollstaendige Adresse, nie leer und nie ein Ordner (WhatsApp, Teams, Facebook). #}
+{% set osvDefaultImage = plugin_path('OSVCustomMeta') ~ "/images/vorschau_standard.jpg" %}
+{% set osvDefaultUsed = false %}
+{% set image = image | trim %}
+
 {% if image starts with 'category/' %}
     {% set image = "/documents/" ~ image %}
 {% endif %}
 
-{% if not (image starts with 'https://' or image starts with 'http://' or image starts with 'layout/'or image starts with '/documents/') %}
+{% if image is empty %}
+    {% set image = osvDefaultImage %}
+    {% set osvDefaultUsed = true %}
+{% elseif image starts with '/' %}
+    {% set image = webstoreConfig.domainSsl ~ image %}
+{% elseif image starts with 'layout/' %}
+    {% set image = webstoreConfig.domainSsl ~ "/" ~ image %}
+{% elseif not (image starts with 'https://' or image starts with 'http://') %}
     {% set image = plugin_path('Ceres') ~ "/" ~ image %}
 {% endif %}
 
@@ -93,8 +108,17 @@
 <meta property="og:title" content="{{ title | trim | raw }}"/>
 <meta property="og:type" content="article"/>
 <meta property="og:url" content="{{ url | trim }}"/>
+<meta property="og:site_name" content="{{ trans("Ceres::Template.headerCompanyName") }}"/>
+{% if description | trim is not empty %}
+<meta property="og:description" content="{{ description | trim }}"/>
+{% endif %}
 <meta property="og:image" content="{{ image | trim }}"/>
+{% if osvDefaultUsed %}
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+{% endif %}
 <meta property="thumbnail" content="{{ image | trim }}"/>
+<meta name="twitter:card" content="summary_large_image"/>
 
 <script type="application/ld+json">
 {% block schemaOrg %}

@@ -2,6 +2,13 @@
 
 Neueste Version oben. Jede Version ist ein Git-Tag; im Plugin-Set wird der Tag gewählt.
 
+## 3.2.1 (14.10.2026)
+
+- Vorschaubild (og:image) auf Kategorie- und Inhaltsseiten: Bild 1, sonst Bild 2 (Kachel), sonst ein festes Teilen-Bild aus dem Plugin
+- Bildadresse immer vollständig mit Shop-Domain, nie mehr ein leerer Pfad oder Ordner (WhatsApp, Teams und Facebook zeigten kein Bild)
+- Neu: og:description, og:site_name, twitter:card; Größenangabe beim Teilen-Bild
+- Artikelseiten unverändert
+
 ## 3.3.0 (05.10.2026) – zurückgezogen, nie installieren
 
 - Gab Bewertungen (aggregateRating) zusätzlich selbst aus. Das Feedback-Plugin liefert sie schon; Google meldete dadurch „mehrere zusammengefasste Bewertungen“ (doppelte Sternebewertung). Tag am 09.10.2026 gelöscht, Code zurückgenommen. Aktuell gültig: 3.2.0.
