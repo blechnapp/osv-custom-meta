@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "menu": {
+    "Vorladen": {
+      "label": "Vorladen",
+      "formFields": {
+        "preloadAktiv": {
+          "type": "checkBox",
+          "required": false,
+          "label": "Hauptbild auf Artikelseiten vorladen (schnelleres Laden am Handy). Aus = kein Vorlade-Hinweis, sonst nichts geändert.",
+          "options": {
+            "defaultValue": "true"
+          }
+        }
+      }
+    }
+  }
+}

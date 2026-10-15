@@ -66,6 +66,34 @@
     {% endif %}
 {% endif %}
 
+{# OSVCustomMeta 3.4.0: Hauptbild der Artikelseite vorladen (LCP am Handy).
+   Ceres baut die Galerie erst per JavaScript, das Bild wurde dadurch spaet angefordert.
+   Bildwahl wie die Galerie: Bilder der Variante, sonst des Artikels, jeweils kleinste Position, Groesse full.
+   Adresse wie Ceres sie anzeigt: bei /item/images/ und jpg/png/webp wird .avif angehaengt,
+   type="image/avif" laesst Browser ohne AVIF den Hinweis ignorieren. Schalter: Konfiguration „Vorladen“. #}
+{% set osvPreload = '' %}
+{% set osvSchalter = config('OSVCustomMeta.preloadAktiv') %}
+{% set osvVorladen = osvSchalter is null or (osvSchalter ~ '') not in ['false', '0', ''] %}
+{% if itemData is defined and itemData is not null and osvVorladen %}
+    {% set osvBilder = itemData.images.variation | default([]) %}
+    {% if osvBilder | length == 0 %}
+        {% set osvBilder = itemData.images.all | default([]) %}
+    {% endif %}
+    {% set osvErstes = null %}
+    {% for osvBild in osvBilder %}
+        {% if osvBild.url | default('') != '' and (osvErstes is null or osvBild.position | default(0) < osvErstes.position | default(0)) %}
+            {% set osvErstes = osvBild %}
+        {% endif %}
+    {% endfor %}
+    {% if osvErstes is not null and '/item/images/' in osvErstes.url %}
+        {% for osvEndung in ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.webp'] %}
+            {% if osvErstes.url ends with osvEndung %}
+                {% set osvPreload = osvErstes.url ~ '.avif' %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
 {% set type             = block('type') | default('article') %}
 {% set url              = block('url') | default(services.url.getCanonicalURL()) | default(webstoreConfig.domainSsl) %}
 
@@ -98,6 +126,9 @@
     {% set image = plugin_path('Ceres') ~ "/" ~ image %}
 {% endif %}
 
+{% if osvPreload is not empty %}
+<link rel="preload" as="image" type="image/avif" fetchpriority="high" href="{{ osvPreload }}">
+{% endif %}
 <meta name="robots" content="{% if forceNoIndex %}NOINDEX{% else %}{{ robots }}{% endif %}">
 {% if description | trim is not empty %}
     <meta name="description" content="{{ description | trim }}">

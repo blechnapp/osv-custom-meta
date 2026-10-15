@@ -2,6 +2,13 @@
 
 Neueste Version oben. Jede Version ist ein Git-Tag; im Plugin-Set wird der Tag gewählt.
 
+## 3.4.0 (15.10.2026)
+
+- Artikelseiten: Hauptbild wird im Seitenkopf vorgeladen (`<link rel="preload" … type="image/avif">`), damit das größte Bild am Handy früher erscheint (LCP). Ceres baut die Galerie erst per JavaScript.
+- Bildwahl wie die Galerie: Bilder der Variante, sonst des Artikels, jeweils kleinste Position, Größe full; Adresse wie Ceres mit angehängtem .avif
+- Neuer Schalter in der Konfiguration: Vorladen » „Hauptbild auf Artikelseiten vorladen“ (Standard an)
+- Vorschaubild, Titel und Beschreibung unverändert
+
 ## 3.2.1 (14.10.2026)
 
 - Vorschaubild (og:image) auf Kategorie- und Inhaltsseiten: Bild 1, sonst Bild 2 (Kachel), sonst ein festes Teilen-Bild aus dem Plugin
