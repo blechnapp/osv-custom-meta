@@ -2,6 +2,11 @@
 
 Neueste Version oben. Jede Version ist ein Git-Tag; im Plugin-Set wird der Tag gewählt.
 
+## 3.4.1 (16.10.2026)
+
+- Seitentitel auf Artikelseiten ohne Meta-Titel (Eigenschaft 288) in einer Zeile: Ceres liefert den Artikelnamen mit Zeilenumbruch und Einrückung, das wird vor „| Seiffener Volkskunst“ jetzt entfernt (title, og:title)
+- Sonst unverändert
+
 ## 3.4.0 (15.10.2026)
 
 - Artikelseiten: Hauptbild wird im Seitenkopf vorgeladen (`<link rel="preload" … type="image/avif">`), damit das größte Bild am Handy früher erscheint (LCP). Ceres baut die Galerie erst per JavaScript.

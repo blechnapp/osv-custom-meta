@@ -98,8 +98,9 @@
 {% set url              = block('url') | default(services.url.getCanonicalURL()) | default(webstoreConfig.domainSsl) %}
 
 {% if not osvTitleSet and (removeTitleCompanyName is not defined or not removeTitleCompanyName) %}
+    {# OSVCustomMeta 3.4.1: Ceres liefert den Artikeltitel eingerueckt mit Zeilenumbruch, daher trim vor dem Anhaengen #}
     {% if title | trim is not empty %}
-        {% set title = title ~ " | " %}
+        {% set title = title | trim ~ " | " %}
     {% endif %}
     {% set title = title ~ trans("Ceres::Template.headerCompanyName") %}
 {% endif %}
